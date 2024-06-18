@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import express from 'express'
-import { errorHandler } from './errorHandler/errorhandler.js'
+import { errorHandler } from './middlewares/errorHandler/errorhandler.js'
 import { tryCatch } from './utils/tryCatch.js'
 
 dotenv.config()
