@@ -14,12 +14,8 @@ const PORT = process.env.PORT ?? 4141
 app.get(
   '/',
   tryCatch(async (req, res) => {
-    console.log(req.body)
-    if (!req.body) {
-      throw new Error('req body doesnt exits')
-    }
-
-    res.send('<h1>GameStore</h1>')
+    console.log('this tittle works')
+    res.status(200).send('<h1>GameStore</h1>')
   })
 )
 
