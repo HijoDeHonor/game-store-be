@@ -34,7 +34,7 @@ describe('create', () => {
 
     // Assert
     expect(res.status).toBe(201);
-    expect(res.body).toEqual(uniqueUserName);
+    expect(res.body).toEqual({ userName: uniqueUserName });
     expect(executeQueryMock).toHaveBeenCalledTimes(2);
   });
   //2
