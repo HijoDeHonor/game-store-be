@@ -1,6 +1,7 @@
 // ERROR MESSAGES:
 export const ERROR_CREATING_USER = 'Error creating the new User.';
 export const FALIED_CREATE_USER = 'Failed to create user.';
+export const INTERNAL_SERVER_ERROR = 'Internal Server Error';
 export const INVALID_DATA = 'Invalid data.';
 export const PASSWORD_CONTAIN_SPACE = 'Password must not contain spaces.';
 export const PASSWORD_REQUIRED = 'Password is required.';

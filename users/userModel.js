@@ -1,4 +1,4 @@
-import { ALREADY_EXIST_ERROR, FALIED_CREATE_USER, SQLERROR, USERS } from '../utils/textConstants.js'
+import { FALIED_CREATE_USER, SQLERROR, USERS, USER_ALREADY_EXIST } from '../utils/textConstants.js'
 import { DEFAULT_CONFIG } from '../utils/MySQLConfig.js'
 import { AlreadyExistError } from '../errors/ErrorTypes/userAlreadyExist.js'
 import { FailedCreateUserError } from '../errors/ErrorTypes/FailedCreateUser.js'
@@ -15,8 +15,7 @@ export class UserModel {
         `SELECT userName FROM users WHERE userName = (?);`,
         [userName]
       );
-      console.log('Rows:', rows);
-      if (rows.length > 0) throw new AlreadyExistError(ALREADY_EXIST_ERROR, USERS);
+      if (rows.length > 0) throw new AlreadyExistError(USER_ALREADY_EXIST, USERS);
 
 
       await mySQLConnection.executeQuery(
@@ -25,6 +24,7 @@ export class UserModel {
         [userName, password]
       )
       return userName
+
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedCreateUserError(FALIED_CREATE_USER, USERS, error);
