@@ -1,53 +1,67 @@
 import { describe, it, expect } from 'vitest'
 import { validateUser } from '../../users/userSchema';
+import { TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, TEST_USERNAME_WITH_SPACE } from '../../utils/textConstants';
 
 describe('validateUser', () => {
   it('should return false if no arguments are provided', () => {
+    // Act
     const result = validateUser();
-    expect(result.success).toBe(false); // Adjusted to check result.success
-    expect(result.data).toBeUndefined()
+    // Assert
+    expect(result.success).toBe(false);
+    expect(result.data).toBeUndefined();
   });
 
   it('should return false if userName or password is not provided', () => {
-    const result = validateUser(undefined, 'password');
+
+    // Act
+    const result = validateUser(undefined, TEST_PASSWORD);
+    const result2 = validateUser(TEST_USERNAME, undefined)
+    // Assert
     expect(result.success).toBe(false);
     expect(result.data).toBeUndefined();
-    const result2 = validateUser(undefined, 'password')
     expect(result2.success).toBe(false);
     expect(result2.data).toBeUndefined();
   });
 
   it('should return false if userName or password are not strings', () => {
-    const result = validateUser(123, 'password');
-    expect(result.success).toBe(false);
-    expect(result.data).toBeUndefined();
-    const result2 = validateUser('userName', 123);
+
+    // Act
+    const result1 = validateUser(123, TEST_PASSWORD);
+    const result2 = validateUser(TEST_USERNAME, 123);
+    // Assert
+    expect(result1.success).toBe(false);
+    expect(result1.data).toBeUndefined();
     expect(result2.success).toBe(false);
     expect(result2.data).toBeUndefined();
   });
 
   it('should return false if userName or password are empty', () => {
-    const result = validateUser('', 'password');
+    // Act
+    const result = validateUser('', TEST_PASSWORD);
+    const result2 = validateUser(TEST_USERNAME, '')
+    // Assert
     expect(result.success).toBe(false);
     expect(result.data).toBeUndefined();
-    const result2 = validateUser('userName', '');
     expect(result2.success).toBe(false);
     expect(result2.data).toBeUndefined();
   });
 
   it('should return false if userName or password contain spaces', () => {
-    const result = validateUser('user name', 'password');
-    expect(result.success).toBe(false);
-    expect(result.data).toBeUndefined();
-    const result2 = validateUser('userName', 'pass word');
+    // Act
+    const result1 = validateUser(TEST_USERNAME_WITH_SPACE, TEST_PASSWORD);
+    const result2 = validateUser(TEST_USERNAME, TEST_PASSWORD_WITH_SPACE);
+    // Assert
+    expect(result1.success).toBe(false);
+    expect(result1.data).toBeUndefined();
     expect(result2.success).toBe(false);
     expect(result2.data).toBeUndefined();
   });
 
-  it('should return an object with success set to true and data as an object if userName and password are valid', () => {
-    const result = validateUser('username', 'password');
+  it('should return an object with success set to true if userName and password are valid', () => {
+    // Act
+    const result = validateUser(TEST_USERNAME, TEST_PASSWORD);
+    // Assert
     expect(result.success).toBe(true);
-    expect(result.data).toBeInstanceOf(Object);
+    expect(result.data).toBeDefined();
   });
-
 });

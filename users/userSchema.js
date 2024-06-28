@@ -1,24 +1,17 @@
 import z from "zod";
+import { PASSWORD_CONTAIN_SPACE, PASSWORD_REQUIRED, USERNAME_CONTAIN_SPACE, USERNAME_REQUIRED } from "../utils/textConstants.js";
 
 const userSchema = z.object({
   userName: z.string()
-    .min(1, { message: 'UserName is required.' })
-    .refine(value => !value.includes(' '), { message: 'UserName must not contain spaces' }),
+    .min(1, { message: USERNAME_REQUIRED })
+    .refine(value => !value.includes(' '), { message: USERNAME_CONTAIN_SPACE }),
   password: z.string()
-    .min(1, { message: 'Password is required.' })
-    .refine(value => !value.includes(' '), { message: 'Password must not contain spaces' }),
+    .min(1, { message: PASSWORD_REQUIRED })
+    .refine(value => !value.includes(' '), { message: PASSWORD_CONTAIN_SPACE }),
 });
 
 export const validateUser = (userName, password) => {
   const input = { userName, password }
-
-  return userSchema.safeParse(input);
+  const result = userSchema.safeParse(input)
+  return result
 }
-
-
-
-
-// if (!userName || !password) return false;
-// if (typeof userName !== 'string' || typeof password !== 'string') return false;
-// if (userName === '' || password === '') return false;
-// if (userName.includes(' ') || password.includes(' ')) return false

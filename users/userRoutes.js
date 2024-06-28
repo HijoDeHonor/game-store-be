@@ -1,12 +1,9 @@
 import { Router } from 'express'
-import { UserControler } from './registerUser/userControler.js'
+import { UserController } from './registerUser/userControler.js'
 
 export const createUserRouter = ({ userModel }) => {
   const userRouter = Router()
-  const userControler = new UserControler({ userModel })
-
+  const userControler = new UserController({ userModel })
   userRouter.post('/', userControler.create)
-
-
   return userRouter
 }
