@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise'
+import mysql from 'mysql2/promise';
 import { SQLERROR } from "./textConstants";
 
 export class MySQLConnection {
@@ -12,7 +12,7 @@ export class MySQLConnection {
       const [result] = await connection.query(query, parameters);
       return result;
     } catch (error) {
-      throw new SQLERROR(error, query, parameters)
+      throw new SQLERROR(error, query, parameters);
     } finally {
       await connection.end();
     }

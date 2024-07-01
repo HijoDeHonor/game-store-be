@@ -11,7 +11,7 @@ const userSchema = z.object({
 });
 
 export const validateUser = (userName, password) => {
-  const input = { userName, password }
-  const result = userSchema.safeParse(input)
-  return result
-}
+  const input = { userName, password };
+  const result = userSchema.safeParse(input);
+  return result;
+};
