@@ -5,6 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
     "dev": "nodemon index.js"
   },
   "keywords": [],
@@ -16,11 +18,15 @@
     "vitest": "^1.6.0"
   },
   "eslintConfig": {
-    "extends": "standard"
+    "extends": "./node_modules/standard/eslintrc.json"
   },
   "dependencies": {
     "dotenv": "16.4.5",
     "express": "4.19.2",
-    "uuid": "10.0.0"
+    "fs": "^0.0.1-security",
+    "mysql2": "^3.10.1",
+    "supertest": "^7.0.0",
+    "uuid": "10.0.0",
+    "zod": "3.23.8"
   }
 }
