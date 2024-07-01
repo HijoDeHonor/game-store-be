@@ -15,7 +15,7 @@ export class UserController {
     }
     const newUser = await this.userModel.create({ input: result.data });
     if (newUser) {
-      res.status(201).json({ userName: newUser });
+      res.status(201).json(newUser);
     }
   })
 }

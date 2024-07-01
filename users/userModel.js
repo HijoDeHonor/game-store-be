@@ -23,7 +23,7 @@ export class UserModel {
           VALUES (?, ?);`,
         [userName, password]
       )
-      return userName
+      return { userName: userName }
 
     } catch (error) {
       if (error.name === SQLERROR) {

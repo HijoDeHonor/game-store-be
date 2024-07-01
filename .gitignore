@@ -1,4 +1,4 @@
 node_modules
 .env
 package-lock.json
-MySQLConfig.js
+settings.json

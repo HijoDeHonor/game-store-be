@@ -34,7 +34,7 @@ describe('UserModel', () => {
 
     // ASSERT
     expect(executeQueryMock).toHaveBeenCalledTimes(2);
-    expect(res).toBe(TEST_USERNAME);
+    expect(res).toEqual({ userName: TEST_USERNAME });
   });
 
   //2
