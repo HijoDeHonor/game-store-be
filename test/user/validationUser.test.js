@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest';
 import { validateUser } from '../../users/userSchema';
 import { TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, TEST_USERNAME_WITH_SPACE } from '../../utils/textConstants';
 
@@ -15,7 +15,7 @@ describe('validateUser', () => {
 
     // Act
     const result = validateUser(undefined, TEST_PASSWORD);
-    const result2 = validateUser(TEST_USERNAME, undefined)
+    const result2 = validateUser(TEST_USERNAME, undefined);
     // Assert
     expect(result.success).toBe(false);
     expect(result.data).toBeUndefined();
@@ -38,7 +38,7 @@ describe('validateUser', () => {
   it('should return false if userName or password are empty', () => {
     // Act
     const result = validateUser('', TEST_PASSWORD);
-    const result2 = validateUser(TEST_USERNAME, '')
+    const result2 = validateUser(TEST_USERNAME, '');
     // Assert
     expect(result.success).toBe(false);
     expect(result.data).toBeUndefined();
