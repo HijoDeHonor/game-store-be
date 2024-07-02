@@ -1,12 +1,13 @@
 import { validateUser } from '../../users/userSchema.js';
-import { INVALID_DATA, USERS } from '../../utils/textConstants.js';
+import { INVALID_DATA, INVALID_LOGIN, INVALID_LOGIN_ERROR, USERS } from '../../utils/textConstants.js';
 import { InvalidDataError } from '../../errors/ErrorTypes/invalidData.js';
 import { tryCatch } from '../../utils/tryCatch.js';
-
+import { jwtCreator } from '../../services/jwtService/jwtCreator.js';
+import { InvalidLoginError } from '../../errors/ErrorTypes/invalidLogin.js';
 
 export class UserController {
-  constructor ({ userModel }) {
-    this.userModel = userModel;
+  constructor ({ UserRepository }) {
+    this.UserRepository = UserRepository;
   }
   create = tryCatch(async (req, res) => {
     const { userName, password } = req.body;
@@ -14,31 +15,37 @@ export class UserController {
     if (!result.success) {
       throw new InvalidDataError(INVALID_DATA, USERS);
     }
-    const newUser = await this.userModel.create({ input: result.data });
+    const newUser = await this.UserRepository.create({ input: result.data });
     if (newUser) {
       res.status(201).json(newUser);
     }
   });
   getByUserName = tryCatch(async (req, res) => {
     const { userName, password } = req.body;
-    const result = validateUser(userName, password);
+    const validation = validateUser(userName, password);
+    if (!validation.success) {
+      throw new InvalidDataError(INVALID_DATA, USERS);
+    }
 
-    if (!result.success) throw new InvalidDataError(INVALID_DATA, USERS);
+    const logUser = await this.UserRepository.getBy({ userName: userName });
 
-    const logUser = await this.userModel.getByUserName({ input: result.data });
     if (logUser) {
-      const { token, ...userWithoutToken } = logUser;
+      console.log('logUser: ', logUser.userName);
+
+      if (logUser.password !== password) {
+        throw new InvalidLoginError(INVALID_LOGIN, USERS);
+      }
+
+      const token = jwtCreator(logUser);
       res
-        .cookie('acces_token', logUser.token,
+        .cookie('acces_token', token,
           {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
           }
         )
         .status(200)
-        .json(userWithoutToken);
+        .json({ userName: logUser.userName });
     }
   });
-
-
 }

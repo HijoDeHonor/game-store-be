@@ -10,14 +10,14 @@ export const PASSWORD_REQUIRED = 'Password is required.';
 export const USERNAME_CONTAIN_SPACE = 'User Name must not contain spaces.';
 export const USERNAME_REQUIRED = 'User Name is required.';
 export const USER_ALREADY_EXIST = 'User already exist.';
-export const USER_DONT_EXIST = 'User dont exist.';
+export const USER_DOES_NOT_EXIST = 'User does not exist.';
 export const SQLERROR = 'SQLError';
 
 // ERROR TYPES:
 export const ALREADY_EXIST_ERROR = 'AlreadyExistError';
 export const INVALID_DATA_ERROR = 'InvalidDataError';
 export const INVALID_LOGIN_ERROR = 'IvalidLoginError';
-export const USER_DONT_EXIST_ERROR = 'UserDontExistError';
+export const USER_DOES_NOT_EXIST_ERROR = 'UserDoesNotExistError';
 
 // ENTITYS:
 export const USERS = 'Users.';
