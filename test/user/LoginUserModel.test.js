@@ -27,7 +27,7 @@ describe(' UserRepository.getBy', () => {
     // ARRANGE
     const property = 'userName';
     const value = TEST_USERNAME;
-    const mockResult = [{ userName: TEST_USERNAME, password: TEST_PASSWORD }];
+    const mockResult = { userName: TEST_USERNAME, password: TEST_PASSWORD };
 
     executeQueryMock.mockImplementationOnce(() => Promise.resolve(mockResult));
 
@@ -40,7 +40,7 @@ describe(' UserRepository.getBy', () => {
       `SELECT * FROM users WHERE (?) = (?);`,
       [property, value]
     );
-    expect(res).toEqual({ user: mockResult[0] });
+    expect(res).toEqual(mockResult);
   });
 
   // 2
