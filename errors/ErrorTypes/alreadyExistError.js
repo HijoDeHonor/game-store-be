@@ -1,4 +1,4 @@
-import { ALREADY_EXIST_ERROR } from "../../utils/textConstants.js";
+import { ALREADY_EXIST_ERROR } from '../../utils/textConstants.js';
 
 export class AlreadyExistError extends Error {
   constructor (message, entity) {

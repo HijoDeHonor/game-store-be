@@ -1,4 +1,4 @@
-import { INVALID_LOGIN_ERROR } from "../../utils/textConstants.js";
+import { INVALID_LOGIN_ERROR } from '../../utils/textConstants.js';
 
 export class InvalidLoginError extends Error {
   constructor (message, entity) {

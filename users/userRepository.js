@@ -1,54 +1,54 @@
-import { FALIED_CREATE_USER, FALIED_LOGIN_USER, INVALID_LOGIN, SQLERROR, USERS, USER_ALREADY_EXIST, USER_DOES_NOT_EXIST } from '../utils/textConstants.js';
-import { DEFAULT_CONFIG } from '../utils/MySQLConfig.js';
-import { AlreadyExistError } from '../errors/ErrorTypes/userAlreadyExist.js';
-import { FailedCreateUserError } from '../errors/ErrorTypes/FailedCreateUser.js';
-import { MySQLConnection } from '../utils/mySQLConnection.js';
-import { UserDoesNotExistError } from '../errors/ErrorTypes/userDoesNotExist.js';
-
-const connectionString = DEFAULT_CONFIG;
-const mySQLConnection = new MySQLConnection(connectionString);
+import { FAILED_CREATE, SQLERROR, USERS, ALREADY_EXIST, DOES_NOT_EXIST, FAILED_GETTING_ERROR } from '../utils/textConstants.js';
+import { AlreadyExistError } from '../errors/ErrorTypes/alreadyExistError.js';
+import { FailedCreatingError } from '../errors/ErrorTypes/failedCreatingError.js';
+import { DoesNotExistError } from '../errors/ErrorTypes/doesNotExistError.js';
+import { FailedGettingError } from '../errors/ErrorTypes/failedGettingError.js';
 
 export class UserRepository {
-  static async create ({ input }) {
+  constructor (mySQLConnection) {
+    this.mySQLConnection = mySQLConnection;
+  }
+
+  async create ({ input }) {
     try {
       const { userName, password } = input;
-      const rows = await mySQLConnection.executeQuery(
-        `SELECT userName FROM users WHERE userName = (?);`,
+      const rows = await this.mySQLConnection.executeQuery(
+        'SELECT userName FROM users WHERE userName = (?);',
         [userName]
       );
-      if (rows.length > 0) throw new AlreadyExistError(USER_ALREADY_EXIST, USERS);
+      if (rows.length > 0) {
+        throw new AlreadyExistError(ALREADY_EXIST, USERS);
+      }
 
-      await mySQLConnection.executeQuery(
+      await this.mySQLConnection.executeQuery(
         `INSERT INTO users (userName, password)
           VALUES (?, ?);`,
         [userName, password]
       );
-      return { userName: userName };
-
+      return { userName };
     } catch (error) {
       if (error.name === SQLERROR) {
-        throw new FailedCreateUserError(FALIED_CREATE_USER, USERS, error);
+        throw new FailedCreatingError(FAILED_CREATE, USERS, error);
       }
       throw error;
     }
   }
 
-  static async getBy (property, value) {
+  async getBy (property) {
+    const key = Object.keys(property)[0];
+    const value = Object.values(property)[0];
     try {
-      const rows = await mySQLConnection.executeQuery(
-        `SELECT * FROM users WHERE (?) = (?);`,
-        [property, value]
+      const rows = await this.mySQLConnection.executeQuery(
+        `SELECT * FROM users WHERE ${key} = ?;`,
+        [key, value]
       );
-
       if (rows.length === 0) {
-        throw new UserDoesNotExistError(USER_DOES_NOT_EXIST, USERS);
+        throw new DoesNotExistError(DOES_NOT_EXIST, USERS);
       }
-
       return rows;
-
     } catch (error) {
       if (error.name === SQLERROR) {
-        throw new FailedCreateUserError(FALIED_LOGIN_USER, USERS, error);
+        throw new FailedGettingError(FAILED_GETTING_ERROR, USERS, error);
       }
       throw error;
     }

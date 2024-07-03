@@ -12,7 +12,6 @@ describe('validateUser', () => {
   });
 
   it('should return false if userName or password is not provided', () => {
-
     // Act
     const result = validateUser(undefined, TEST_PASSWORD);
     const result2 = validateUser(TEST_USERNAME, undefined);
@@ -24,7 +23,6 @@ describe('validateUser', () => {
   });
 
   it('should return false if userName or password are not strings', () => {
-
     // Act
     const result1 = validateUser(123, TEST_PASSWORD);
     const result2 = validateUser(TEST_USERNAME, 123);

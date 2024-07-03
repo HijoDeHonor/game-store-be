@@ -1,4 +1,4 @@
-import { INVALID_DATA_ERROR } from "../../utils/textConstants.js";
+import { INVALID_DATA_ERROR } from '../../utils/textConstants.js';
 
 export class InvalidDataError extends Error {
   constructor (message, entity) {

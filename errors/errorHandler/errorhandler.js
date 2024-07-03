@@ -1,6 +1,5 @@
-import { INTERNAL_SERVER_ERROR } from "../../utils/textConstants.js";
-import { errors } from "./errorDictionary.js";
-
+import { INTERNAL_SERVER_ERROR } from '../../utils/textConstants.js';
+import { errors } from './errorDictionary.js';
 
 export const errorHandler = (error, req, res, next) => {
   const statusCode = errors[error.name] || 500;

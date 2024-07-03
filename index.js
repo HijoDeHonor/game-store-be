@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import { errorHandler } from './errors/errorHandler/errorhandler.js';
 import { tryCatch } from './utils/tryCatch.js';
 import { createUserRouter } from './users/userRoutes.js';
-import { UserRepository } from './users/UserRepository.js';
+import { UserRepository } from './users/userRepository.js';
 dotenv.config();
 
 export const app = express();
@@ -14,7 +14,7 @@ app.use(cookieParser());
 app.disable('x-powered-by');
 
 
-app.use('/users', createUserRouter({ UserRepository: UserRepository }));
+app.use('/users', createUserRouter({ UserRepository: new UserRepository }));
 
 
 app.get(
