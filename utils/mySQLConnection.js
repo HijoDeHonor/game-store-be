@@ -1,15 +1,15 @@
 import mysql from 'mysql2/promise';
-import { SQLError } from '../errors/ErrorTypes/SQLError.js';
+import { SQLError } from '../errors/errorTypes/SQLError.js';
 
 export class MySQLConnection {
-  constructor (connectionString) {
-    this.connectionString = connectionString;
+  constructor ({ defaultConfig }) {
+    this.defaultConfig = defaultConfig;
   }
 
   async executeQuery (query, parameters) {
     let connection;
     try {
-      connection = await mysql.createConnection(this.connectionString);
+      connection = await mysql.createConnection(this.defaultConfig);
       const [rows, fields] = await connection.query(query, parameters);
       return rows;
     } catch (error) {
