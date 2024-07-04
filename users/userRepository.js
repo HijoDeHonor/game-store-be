@@ -1,11 +1,11 @@
 import { FAILED_CREATE, SQLERROR, USERS, ALREADY_EXIST, DOES_NOT_EXIST, FAILED_GETTING_ERROR } from '../utils/textConstants.js';
-import { AlreadyExistError } from '../errors/ErrorTypes/alreadyExistError.js';
-import { FailedCreatingError } from '../errors/ErrorTypes/failedCreatingError.js';
-import { DoesNotExistError } from '../errors/ErrorTypes/doesNotExistError.js';
-import { FailedGettingError } from '../errors/ErrorTypes/failedGettingError.js';
+import { AlreadyExistError } from '../errors/errorTypes/alreadyExistError.js';
+import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
+import { DoesNotExistError } from '../errors/errorTypes/doesNotExistError.js';
+import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
 
 export class UserRepository {
-  constructor (mySQLConnection) {
+  constructor ({ mySQLConnection }) {
     this.mySQLConnection = mySQLConnection;
   }
 
@@ -40,7 +40,7 @@ export class UserRepository {
     try {
       const rows = await this.mySQLConnection.executeQuery(
         `SELECT * FROM users WHERE ${key} = ?;`,
-        [key, value]
+        [value]
       );
       if (rows.length === 0) {
         throw new DoesNotExistError(DOES_NOT_EXIST, USERS);

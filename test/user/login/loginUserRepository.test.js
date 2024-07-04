@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { TEST_PASSWORD, TEST_USERNAME } from '../../utils/textConstants.js';
-import { UserRepository } from '../../users/userRepository.js';
-import { SQLError } from '../../errors/ErrorTypes/SQLError.js';
-import { DoesNotExistError } from '../../errors/ErrorTypes/doesNotExistError.js';
-import { FailedGettingError } from '../../errors/ErrorTypes/failedGettingError.js';
+import { TEST_PASSWORD, TEST_USERNAME } from '../../../utils/textConstants.js';
+import { UserRepository } from '../../../users/userRepository.js';
+import { SQLError } from '../../../errors/errorTypes/SQLError.js';
+import { DoesNotExistError } from '../../../errors/errorTypes/doesNotExistError.js';
+import { FailedGettingError } from '../../../errors/errorTypes/failedGettingError.js';
 
 describe('getByUsername', () => {
   let mockConnection;
@@ -13,7 +13,7 @@ describe('getByUsername', () => {
     mockConnection = {
       executeQuery: vi.fn()
     };
-    userRepository = new UserRepository(mockConnection);
+    userRepository = new UserRepository({ mySQLConnection: mockConnection });
   });
 
   afterEach(() => {

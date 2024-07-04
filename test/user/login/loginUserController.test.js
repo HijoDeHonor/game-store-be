@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR, TEST_TOKEN, INVALID_LOGIN_ERROR, INVALID_LOGIN, TEST_WRONG_PASSWORD } from '../../utils/textConstants.js';
+import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR, TEST_TOKEN, INVALID_LOGIN_ERROR, INVALID_LOGIN, TEST_WRONG_PASSWORD } from '../../../utils/textConstants.js';
 import request from 'supertest';
-import { app } from '../../index.js';
-import { UserRepository } from '../../users/userRepository.js';
-import * as jwtUtils from '../../services/jwtService/jwtCreator.js';
+import { app } from '../../../index.js';
+import { UserRepository } from '../../../users/userRepository.js';
+import * as jwtUtils from '../../../services/jwtService/jwtCreator.js';
 
 describe('Login', () => {
   let userRepositoryMock;
@@ -23,7 +23,7 @@ describe('Login', () => {
   // 1
   it('should login if all goes rigth', async () => {
     // ASSERT
-    userRepositoryMock.mockImplementationOnce(() => Promise.resolve({ userName: TEST_USERNAME, password: TEST_PASSWORD }));
+    userRepositoryMock.mockImplementationOnce(() => Promise.resolve([{ userName: TEST_USERNAME, password: TEST_PASSWORD }]));
 
     // Act
     const res = await request(app)
@@ -32,7 +32,6 @@ describe('Login', () => {
 
     // Assert
     expect(res.headers['set-cookie']).toBeDefined();
-    const cookies = res.headers['set-cookie'];
     expect(jwtCreatorMock).toHaveBeenCalled();
     expect(userRepositoryMock).toHaveBeenCalledTimes(1);
     expect(res.status).toBe(200);
@@ -57,7 +56,7 @@ describe('Login', () => {
   // 3
   it('should return an error if the user or password dont match', async () => {
     // ARRANGE
-    userRepositoryMock.mockImplementationOnce(() => Promise.resolve({ userName: TEST_USERNAME, password: TEST_PASSWORD }));
+    userRepositoryMock.mockImplementationOnce(() => Promise.resolve([{ userName: TEST_USERNAME, password: TEST_PASSWORD }]));
 
     // ACT
     const res = await request(app)
@@ -76,7 +75,7 @@ describe('Login', () => {
   it('should return a general creation error', async () => {
     // ARRANGE
     userRepositoryMock.mockImplementationOnce(() => {
-      throw error;
+      throw new Error();
     });
     // ACT
     const res = await request(app)

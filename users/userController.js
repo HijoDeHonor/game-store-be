@@ -1,24 +1,24 @@
 import { validateUser } from './userSchema.js';
 import { tryCatch } from '../utils/tryCatch.js';
 import { jwtCreator } from '../services/jwtService/jwtCreator.js';
-import { MySQLConnection } from '../utils/mySQLConnection.js';
-import { UserRepository } from './userRepository.js';
 import { INVALID_DATA, INVALID_LOGIN, USERS } from '../utils/textConstants.js';
-import { InvalidDataError } from '../errors/ErrorTypes/invalidDataError.js';
-import { InvalidLoginError } from '../errors/ErrorTypes/invalidLoginError.js';
-import { DEFAULT_CONFIG } from '../utils/mySQLConfig.js';
-
-const connection = new MySQLConnection(DEFAULT_CONFIG);
-const userRepository = new UserRepository(connection);
+import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
+import { InvalidLoginError } from '../errors/errorTypes/invalidLoginError.js';
 
 export class UserController {
+  constructor ({ userRepository }) {
+    this.userRepository = userRepository;
+    this.create = this.create.bind(this);
+    this.login = this.login.bind(this);
+  }
+
   create = tryCatch(async (req, res) => {
     const { userName, password } = req.body;
     const validation = validateUser(userName, password);
     if (!validation.success) {
       throw new InvalidDataError(INVALID_DATA, USERS);
     }
-    const newUser = await userRepository.create({ input: validation.data });
+    const newUser = await this.userRepository.create({ input: validation.data });
     if (newUser) {
       res.status(201).json(newUser);
     }
@@ -30,9 +30,9 @@ export class UserController {
     if (!validation.success) {
       throw new InvalidDataError(INVALID_DATA, USERS);
     }
-    const logUser = await userRepository.getBy({ userName });
+    const logUser = await this.userRepository.getBy({ userName });
     if (logUser) {
-      if (logUser.password !== password) {
+      if (logUser[0].password !== password) {
         throw new InvalidLoginError(INVALID_LOGIN, USERS);
       }
       const token = jwtCreator(logUser);
@@ -44,7 +44,7 @@ export class UserController {
           }
         )
         .status(200)
-        .json({ userName: logUser.userName });
+        .json({ userName: logUser[0].userName });
     }
   });
 }

@@ -1,12 +1,13 @@
 import { Router } from 'express';
-import { UserController } from '../users/userControler.js';
+import { container } from '../dependencyInjection/di-settings.js';
 
-export const createUserRouter = ({ UserRepository }) => {
+const userController = container.resolve('userController');
+
+export const createUserRouter = () => {
   const userRouter = Router();
-  const userControler = new UserController({ UserRepository });
 
-  userRouter.post('/', userControler.create);
-  userRouter.get('/', userControler.login);
+  userRouter.post('/', userController.create);
+  userRouter.get('/', userController.login);
 
   return userRouter;
 };
