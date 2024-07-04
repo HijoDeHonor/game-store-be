@@ -40,7 +40,7 @@ export class UserRepository {
     try {
       const rows = await this.mySQLConnection.executeQuery(
         `SELECT * FROM users WHERE ${key} = ?;`,
-        [key, value]
+        [value]
       );
       if (rows.length === 0) {
         throw new DoesNotExistError(DOES_NOT_EXIST, USERS);

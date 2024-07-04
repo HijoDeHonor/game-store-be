@@ -10,7 +10,6 @@ dotenv.config();
 export const app = express();
 app.use(express.json());
 app.use(cookieParser());
-// app.use(corsMiddelware())
 app.disable('x-powered-by');
 
 app.use('/users', createUserRouter());

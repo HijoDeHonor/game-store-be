@@ -10,9 +10,9 @@ export const container = awilix.createContainer({
 
 export function settings () {
   container.register({
-    userController: awilix.asClass(UserController).singleton(),
-    userRepository: awilix.asClass(UserRepository).singleton(),
-    mySQLConnection: awilix.asClass(MySQLConnection).singleton(),
+    userController: awilix.asClass(UserController).scoped(),
+    userRepository: awilix.asClass(UserRepository).scoped(),
+    mySQLConnection: awilix.asClass(MySQLConnection).scoped(),
     defaultConfig: awilix.asValue(DEFAULT_CONFIG)
   });
 }

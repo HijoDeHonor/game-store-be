@@ -32,7 +32,7 @@ export class UserController {
     }
     const logUser = await this.userRepository.getBy({ userName });
     if (logUser) {
-      if (logUser.password !== password) {
+      if (logUser[0].password !== password) {
         throw new InvalidLoginError(INVALID_LOGIN, USERS);
       }
       const token = jwtCreator(logUser);
@@ -44,7 +44,7 @@ export class UserController {
           }
         )
         .status(200)
-        .json({ userName: logUser.userName });
+        .json({ userName: logUser[0].userName });
     }
   });
 }

@@ -1,24 +1,28 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR } from '../../utils/textConstants.js';
-import { MySQLConnection } from '../../utils/mySQLConnection.js';
+import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR } from '../../../utils/textConstants.js';
+import { MySQLConnection } from '../../../utils/mySQLConnection.js';
 import request from 'supertest';
-import { app } from '../../index.js';
+import { app } from '../../../index.js';
 
-describe('create', () => {
+describe('create', () =>
+{
   let executeQueryMock;
 
-  beforeEach(() => {
+  beforeEach(() =>
+  {
     executeQueryMock = vi.spyOn(MySQLConnection.prototype, 'executeQuery');
   });
 
-  afterEach(() => {
+  afterEach(() =>
+  {
     vi.restoreAllMocks();
   });
 
   // tests
   // 1
 
-  it('should create a user successfully', async () => {
+  it('should create a user successfully', async () =>
+  {
     // Arrange
     const uniqueUserName = `TEST_USERNAME_${Date.now()}`;
     executeQueryMock.mockImplementationOnce(() => Promise.resolve([]))
@@ -36,7 +40,8 @@ describe('create', () => {
   });
   // 2
 
-  it('should return a validation error', async () => {
+  it('should return a validation error', async () =>
+  {
     // ARRANGE
 
     // ACT
@@ -51,7 +56,8 @@ describe('create', () => {
   });
   // 3
 
-  it('should return a general creation error', async () => {
+  it('should return a general creation error', async () =>
+  {
     // ARRANGE
     executeQueryMock.mockImplementationOnce(() => Promise.resolve());
     // ACT
