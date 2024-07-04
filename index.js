@@ -21,7 +21,7 @@ app.get(
     res.status(200).send('<h1>GameStore</h1>');
   }));
 
-const PORT = process.env.PORT ?? 4141;
+const PORT = process.env.PORT ?? 0;
 
 app.use(errorHandler);
 

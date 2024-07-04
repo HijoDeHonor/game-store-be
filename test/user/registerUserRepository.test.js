@@ -3,8 +3,8 @@ import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, U
 import request from 'supertest';
 import { app } from '../../index.js';
 import { UserRepository } from '../../users/userRepository.js';
-import { AlreadyExistError } from '../../errors/ErrorTypes/alreadyExistError.js';
-import { FailedCreatingError } from '../../errors/ErrorTypes/failedCreatingError.js';
+import { AlreadyExistError } from '../../errors/errorTypes/alreadyExistError.js';
+import { FailedCreatingError } from '../../errors/errorTypes/failedCreatingError.js';
 import { SQLError } from '../../errors/ErrorTypes/SQLError.js';
 
 describe('create', () => {
@@ -15,7 +15,7 @@ describe('create', () => {
     mockConnection = {
       executeQuery: vi.fn()
     };
-    userRepository = new UserRepository(mockConnection);
+    userRepository = new UserRepository({ mySQLConnection: mockConnection });
   });
 
   afterEach(() => {
