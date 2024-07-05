@@ -1,6 +1,6 @@
 import awilix from 'awilix';
 import { UserController } from '../users/userController.js';
-import { UserService } from '../services/userService/userService.js';
+import { UserService } from '../users/userService.js';
 import { UserRepository } from '../users/userRepository.js';
 import { MySQLConnection } from '../utils/mySQLConnection.js';
 import { DEFAULT_CONFIG } from '../utils/mySQLConfig.js';
