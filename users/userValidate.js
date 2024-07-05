@@ -10,7 +10,7 @@ const userSchema = z.object({
     .refine(value => !value.includes(' '), { message: PASSWORD_CONTAIN_SPACE })
 });
 
-export const validateUser = (userName, password) => {
+export const userValidate = (userName, password) => {
   const input = { userName, password };
   const result = userSchema.safeParse(input);
   return result;
