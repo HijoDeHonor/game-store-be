@@ -1,3 +1,6 @@
+import { InvalidLoginError } from '../errors/errorTypes/InvalidLoginError.js';
+import { jwtCreator } from '../jwt/jwtCreator.js';
+import { INVALID_LOGIN, USERS } from '../utils/textConstants.js';
 import { tryCatch } from '../utils/tryCatch.js';
 
 export class UserController {
@@ -16,8 +19,10 @@ export class UserController {
   login = tryCatch(async (req, res) => {
     const { userName, password } = req.body;
     const logUser = await this.userService.login(userName, password);
-    const logUserName = logUser.findUser[0].userName;
-    const token = logUser.token;
+    if (logUser[0].password !== password) {
+      throw new InvalidLoginError(INVALID_LOGIN, USERS);
+    }
+    const token = jwtCreator(logUser[0]);
     res
       .cookie('acces_token', token,
         {
@@ -26,6 +31,6 @@ export class UserController {
         }
       )
       .status(200)
-      .json({ userName: logUserName });
+      .json({ userName: logUser[0].userName });
   });
 }

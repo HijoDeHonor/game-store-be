@@ -33,7 +33,7 @@ describe('create', () => {
 
     // Act
     const input = { userName: TEST_USERNAME, password: TEST_PASSWORD };
-    const res = await userRepository.create({ input });
+    const res = await userRepository.create(input);
     // Assert
     expect(mockConnection.executeQuery).toHaveBeenCalledTimes(2);
     expect(res).toEqual({ userName: TEST_USERNAME });
@@ -62,7 +62,7 @@ describe('create', () => {
     const input = { userName: TEST_USERNAME, password: TEST_PASSWORD };
 
     // ACT & ASSERT
-    await expect(userRepository.create({ input })).rejects.toThrow(AlreadyExistError);
+    await expect(userRepository.create(input)).rejects.toThrow(AlreadyExistError);
   });
   // 4
 
@@ -75,6 +75,6 @@ describe('create', () => {
     // ACT
     const input = { userName: TEST_USERNAME, password: TEST_PASSWORD };
     // ASSERT
-    await expect(userRepository.create({ input })).rejects.toThrow(FailedCreatingError);
+    await expect(userRepository.create(input)).rejects.toThrow(FailedCreatingError);
   });
 });

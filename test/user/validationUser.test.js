@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { userValidate } from '../../users/userValidate.js';
+import { userValidate } from '../../users/userValidator.js';
 import { TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, TEST_USERNAME_WITH_SPACE } from '../../utils/textConstants';
 
 describe('userValidate', () => {

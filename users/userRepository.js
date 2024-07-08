@@ -9,7 +9,7 @@ export class UserRepository {
     this.mySQLConnection = mySQLConnection;
   }
 
-  async create ({ input }) {
+  async create (input) {
     try {
       const { userName, password } = input;
       const rows = await this.mySQLConnection.executeQuery(
