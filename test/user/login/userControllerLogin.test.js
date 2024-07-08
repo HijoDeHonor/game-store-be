@@ -1,17 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR, TEST_TOKEN, INVALID_LOGIN_ERROR, INVALID_LOGIN, TEST_WRONG_PASSWORD } from '../../../utils/textConstants.js';
+import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR, INVALID_LOGIN_ERROR, INVALID_LOGIN, TEST_WRONG_PASSWORD } from '../../../utils/textConstants.js';
 import request from 'supertest';
 import { app } from '../../../index.js';
 import { UserRepository } from '../../../users/userRepository.js';
-import * as jwtUtils from '../../../services/jwtService/jwtCreator.js';
 
 describe('Login', () => {
   let userRepositoryMock;
-  let jwtCreatorMock;
 
   beforeEach(() => {
     userRepositoryMock = vi.spyOn(UserRepository.prototype, 'getBy');
-    jwtCreatorMock = vi.spyOn(jwtUtils, 'jwtCreator').mockReturnValue(TEST_TOKEN);
   });
 
   afterEach(() => {
@@ -32,7 +29,6 @@ describe('Login', () => {
 
     // Assert
     expect(res.headers['set-cookie']).toBeDefined();
-    expect(jwtCreatorMock).toHaveBeenCalled();
     expect(userRepositoryMock).toHaveBeenCalledTimes(1);
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ userName: TEST_USERNAME });

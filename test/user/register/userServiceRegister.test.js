@@ -6,8 +6,6 @@ import { MySQLConnection } from '../../../utils/mySQLConnection.js';
 import { InvalidDataError } from '../../../errors/errorTypes/invalidDataError.js';
 import { DEFAULT_CONFIG } from '../../../utils/mySQLConfig.js';
 
-// Mock MySQLConnection
-
 describe('userService.create', () => {
   let userService;
   let executeQueryMock;
