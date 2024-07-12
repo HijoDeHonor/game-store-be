@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import supertest from 'supertest';
 import express from 'express';
 import { InventoryController } from '../../inventory/inventoryController.js';
+import { TEST_USERNAME } from '../../utils/textConstants.js';
 
 const mockInventoryService = {
   getAllUserItems: vi.fn()
@@ -18,34 +19,34 @@ describe('InventoryController', () => {
 
     controller = new InventoryController({ inventoryService: mockInventoryService });
 
-    app.get('/inventory/:id?', controller.getAllUserItems);
+    app.get('/inventory/:userName?', controller.getAllUserItems);
   });
 
   it('should be able to return an array with all the items that the user has', async () => {
     // ARRANGE
     const mockItems = [{ id: 1, name: 'item1' }, { id: 2, name: 'item2' }];
+
     mockInventoryService.getAllUserItems.mockResolvedValue(mockItems);
 
     // ACT
-    const res = await supertest(app).get('/inventory/123').expect(200);
+    const res = await supertest(app).get(`/inventory/${TEST_USERNAME}`).expect(200);
 
     // ASSERT
     expect(res.body).toEqual(mockItems);
-    expect(mockInventoryService.getAllUserItems).toHaveBeenCalledWith('123');
+    expect(mockInventoryService.getAllUserItems).toHaveBeenCalledWith(TEST_USERNAME);
   });
 
   it('should be able to return an empty array if the user has no items', async () => {
     // ARRANGE
     const mockItems = [];
+
     mockInventoryService.getAllUserItems.mockResolvedValue(mockItems);
 
     // ACT
-    const res = await supertest(app).get('/inventory/123');
+    const res = await supertest(app).get(`/inventory/${TEST_USERNAME}`).expect(200);
 
     // ASSERT
     expect(res.body).toEqual(mockItems);
-    expect(mockInventoryService.getAllUserItems).toHaveBeenCalledWith('123');
+    expect(mockInventoryService.getAllUserItems).toHaveBeenCalledWith(TEST_USERNAME);
   });
-
-  it('');
 });

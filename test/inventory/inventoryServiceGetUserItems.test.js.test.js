@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { InventoryRepository } from '../../inventory/inventoryRepository.js';
 import { InventoryService } from '../../inventory/inventoryService.js';
-import { TEST_USER_ID } from '../../utils/textConstants.js';
+import { TEST_USERNAME } from '../../utils/textConstants.js';
 
 describe('inventoryServiceGetUserItems', () => {
   let inventoryRepositoryMock;
   let inventoryService;
 
   beforeEach(() => {
-    inventoryRepositoryMock = vi.spyOn(InventoryRepository.prototype, 'getByUserId');
+    inventoryRepositoryMock = vi.spyOn(InventoryRepository.prototype, 'getByUserName');
     inventoryService = new InventoryService({ inventoryRepository: new InventoryRepository({ mySQLConnection: {} }) });
   });
 
@@ -19,10 +19,10 @@ describe('inventoryServiceGetUserItems', () => {
   it('should be able to return an empty array if it is the return of the repository', async () => {
     // ARRANGE
     inventoryRepositoryMock.mockResolvedValue([]);
-    const id = TEST_USER_ID;
+    const userName = TEST_USERNAME;
 
     // ACT
-    const res = await inventoryService.getAllUserItems(id);
+    const res = await inventoryService.getAllUserItems(userName);
 
     // ASSERT
     expect(res).toEqual([]);
@@ -33,10 +33,10 @@ describe('inventoryServiceGetUserItems', () => {
     inventoryRepositoryMock.mockResolvedValue([
       { Id: 1, Name: 'Espada', Quantity: 4, Img: 'https://cdn-icons-png.freepik.com/256/11858/11858642.png?uid=R125020544&ga=GA1.1.297410512.1711637426&' },
       { Id: 2, Name: 'Arco', Quantity: 7, Img: 'https://cdn-icons-png.freepik.com/256/9728/9728024.png?uid=R125020544&ga=GA1.1.297410512.1711637426&' }]);
-    const id = TEST_USER_ID;
+    const userName = TEST_USERNAME;
 
     // ACT
-    const res = await inventoryService.getAllUserItems(id);
+    const res = await inventoryService.getAllUserItems(userName);
 
     // ASSERT
     expect(res).toEqual([

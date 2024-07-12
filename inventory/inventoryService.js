@@ -6,11 +6,11 @@ export class InventoryService {
     this.inventoryRepository = inventoryRepository;
   }
 
-  getAllUserItems = async (userId) => {
-    if (!userId) {
+  getAllUserItems = async (userName) => {
+    if (!userName) {
       throw new InvalidDataError(INVALID_DATA, INVENTORY);
     };
-    const items = await this.inventoryRepository.getByUserId(userId);
+    const items = await this.inventoryRepository.getByUserName(userName);
 
     return items;
   };

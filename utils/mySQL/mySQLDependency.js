@@ -1,6 +1,6 @@
 import { asClass, asValue } from 'awilix';
-import { MySQLConnection } from '../../utils/mySQLConnection.js';
-import { DEFAULT_CONFIG } from '../../utils/mySQLConfig.js';
+import { MySQLConnection } from './mySQLConnection.js';
+import { DEFAULT_CONFIG } from './mySQLConfig.js';
 
 export const mySQLDependency = (container) => {
   container.register({

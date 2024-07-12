@@ -1,7 +1,7 @@
 import { asClass } from 'awilix';
-import { UserController } from '../../users/userController.js';
-import { UserRepository } from '../../users/userRepository.js';
-import { UserService } from '../../users/userService.js';
+import { UserController } from '../userController.js';
+import { UserRepository } from '../userRepository.js';
+import { UserService } from '../userService.js';
 
 export const registerUserDependency = (container) => {
   container.register({

@@ -1,7 +1,7 @@
 import { asClass } from 'awilix';
-import { InventoryController } from '../../inventory/inventoryController.js';
-import { InventoryService } from '../../inventory/inventoryService.js';
-import { InventoryRepository } from '../../inventory/inventoryRepository.js';
+import { InventoryController } from '../inventoryController.js';
+import { InventoryService } from '../inventoryService.js';
+import { InventoryRepository } from '../inventoryRepository.js';
 
 export const registerInventoryDependency = (container) => {
   container.register({

@@ -7,8 +7,8 @@ export class InventoryController {
   }
 
   getAllUserItems = tryCatch(async (req, res) => {
-    const { id } = req.params;
-    const items = await this.inventoryService.getAllUserItems(id);
+    const { userName } = req.params;
+    const items = await this.inventoryService.getAllUserItems(userName);
     res.status(200).json(items);
   });
 }

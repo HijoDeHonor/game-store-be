@@ -30,7 +30,6 @@ describe('authenticateJWT', () => {
       .get('/protected')
       .set('Cookie', [`acces_token=${token}`])
       .expect(200);
-    console.log(res.body);
     expect(res.body).toMatchObject({
       message: TEST_AUTHENTICATION_SUCCESS,
       userId: { id: 123 }
