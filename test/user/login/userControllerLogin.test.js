@@ -19,7 +19,7 @@ describe('Login', () => {
 
   // 1
   it('should login if all goes rigth', async () => {
-    // ARRANGE
+    // ASSERT
     userRepositoryMock.mockImplementationOnce(() => Promise.resolve([{ userName: TEST_USERNAME, password: TEST_PASSWORD }]));
 
     // Act
@@ -27,7 +27,7 @@ describe('Login', () => {
       .get('/users')
       .send({ userName: TEST_USERNAME, password: TEST_PASSWORD });
 
-    // ASSERT
+    // Assert
     expect(res.headers['set-cookie']).toBeDefined();
     expect(userRepositoryMock).toHaveBeenCalledTimes(1);
     expect(res.status).toBe(200);

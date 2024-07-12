@@ -24,7 +24,6 @@ export const DOES_NOT_EXIST_ERROR = 'DoesNotExistError';
 
 // ENTITYS:
 export const USERS = 'Users.';
-export const INVENTORY = 'Inventory.';
 
 // TEST
 export const TEST_PASSWORD = 'password';
@@ -34,9 +33,3 @@ export const TEST_USERNAME = 'userName';
 export const TEST_USERNAME_WITH_SPACE = 'user Name';
 export const TEST_DONT_EXIST_USERNAME = 'ThisUserDontExist';
 export const TEST_TOKEN = 'this is an awesome and super secure token, trust me.';
-export const TEST_TOKEN_INVALID = 'invalid.token';
-export const TEST_USER_ID = 'thisIsAnUserId';
-export const TEST_AUTHENTICATION_SUCCESS = 'You are authenticated';
-
-//
-export const SECRET_TOKEN_KEY = 'iam-a-super-secure-secret-word';

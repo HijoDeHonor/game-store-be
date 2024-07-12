@@ -1,16 +1,22 @@
 import awilix from 'awilix';
-import { registerInventoryDependency } from './modules/registerInventoryDependency.js';
-import { registerUserDependency } from './modules/registerUserDependency.js';
-import { mySQLDependency } from './modules/mySQLDependency.js';
+import { UserController } from '../users/userController.js';
+import { UserService } from '../users/userService.js';
+import { UserRepository } from '../users/userRepository.js';
+import { MySQLConnection } from '../utils/mySQLConnection.js';
+import { DEFAULT_CONFIG } from '../utils/mySQLConfig.js';
 
 export const container = awilix.createContainer({
   injectionMode: awilix.InjectionMode.PROXY
 });
 
 export function settings () {
-  registerInventoryDependency(container);
-  registerUserDependency(container);
-  mySQLDependency(container);
+  container.register({
+    userController: awilix.asClass(UserController).scoped(),
+    userService: awilix.asClass(UserService).scoped(),
+    userRepository: awilix.asClass(UserRepository).scoped(),
+    mySQLConnection: awilix.asClass(MySQLConnection).scoped(),
+    defaultConfig: awilix.asValue(DEFAULT_CONFIG)
+  });
 }
 
 settings();

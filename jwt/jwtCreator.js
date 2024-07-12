@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { SECRET_TOKEN_KEY } from '../utils/textConstants.js';
 dotenv.config();
 
-const secret = process.env.SECRET_KEY || SECRET_TOKEN_KEY;
+const secret = process.env.SECRET_KEY || 'iam-a-super-secure-secret-word';
 const tokenExpirationTimeSeconds = process.env.TOKEN_EXPIRATION_TIME_SECONDS || 3600;
 
 export const jwtCreator = (payload) => {
