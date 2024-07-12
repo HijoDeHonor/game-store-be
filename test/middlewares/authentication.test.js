@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import { authenticateJWT } from '../../middlewares/authentication.js';
 import dotenv from 'dotenv';
-import { TEST_AUTHENTICATION_SUCCESS, TEST_TOKEN_INVALID } from '../../utils/textConstants.js';
+import { SECRET_TOKEN_KEY, TEST_AUTHENTICATION_SUCCESS, TEST_TOKEN_INVALID } from '../../utils/textConstants.js';
 dotenv.config();
 
 const app = express();
@@ -16,7 +16,7 @@ app.get('/protected', authenticateJWT, (req, res) => {
   res.json({ message: TEST_AUTHENTICATION_SUCCESS, userId: req.userid });
 });
 
-const secret = process.env.SECRET_KEY || 'iam-a-super-secure-secret-word'; // Usa el mismo secreto que en tu archivo original
+const secret = process.env.SECRET_KEY || SECRET_TOKEN_KEY;
 
 describe('authenticateJWT', () => {
   let token;
