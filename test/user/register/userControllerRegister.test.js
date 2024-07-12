@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR } from '../../../utils/textConstants.js';
-import { MySQLConnection } from '../../../utils/mySQLConnection.js';
+import { MySQLConnection } from '../../../utils/mySQL/mySQLConnection.js';
 import request from 'supertest';
 import { app } from '../../../index.js';
 

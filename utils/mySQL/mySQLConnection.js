@@ -1,5 +1,5 @@
 import mysql from 'mysql2/promise';
-import { SQLError } from '../errors/errorTypes/SQLError.js';
+import { SQLError } from '../../errors/errorTypes/SQLError.js';
 
 export class MySQLConnection {
   constructor ({ defaultConfig }) {
