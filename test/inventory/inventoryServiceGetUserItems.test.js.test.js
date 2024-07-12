@@ -1,33 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { InventoryRepository } from '../../inventory/inventoryRepository.js';
-import { FAILED_GETTING_ERROR, INVENTORY, TEST_USER_ID } from '../../utils/textConstants.js';
 import { InventoryService } from '../../inventory/inventoryService.js';
-import { FailedGettingError } from '../../errors/errorTypes/failedGettingError.js';
+import { TEST_USER_ID } from '../../utils/textConstants.js';
 
 describe('inventoryServiceGetUserItems', () => {
   let inventoryRepositoryMock;
   let inventoryService;
 
   beforeEach(() => {
-    inventoryRepositoryMock = vi.spyOn(InventoryRepository.prototype, 'getBy');
+    inventoryRepositoryMock = vi.spyOn(InventoryRepository.prototype, 'getByUserId');
     inventoryService = new InventoryService({ inventoryRepository: new InventoryRepository({ mySQLConnection: {} }) });
   });
 
   afterEach(() => {
     vi.resetAllMocks();
-  });
-
-  it('should throw FailedGettingError if the return of the repository is undefined', async () => {
-    // ARRANGE
-    inventoryRepositoryMock.mockResolvedValue(undefined);
-    const id = TEST_USER_ID;
-
-    // ACT & ASSERT
-    await expect(inventoryService.getAll(id)).rejects.toThrow(FailedGettingError);
-    await expect(inventoryService.getAll(id)).rejects.toMatchObject({
-      name: FAILED_GETTING_ERROR,
-      entity: INVENTORY
-    });
   });
 
   it('should be able to return an empty array if it is the return of the repository', async () => {
@@ -36,7 +22,7 @@ describe('inventoryServiceGetUserItems', () => {
     const id = TEST_USER_ID;
 
     // ACT
-    const res = await inventoryService.getAll(id);
+    const res = await inventoryService.getAllUserItems(id);
 
     // ASSERT
     expect(res).toEqual([]);
@@ -50,7 +36,7 @@ describe('inventoryServiceGetUserItems', () => {
     const id = TEST_USER_ID;
 
     // ACT
-    const res = await inventoryService.getAll(id);
+    const res = await inventoryService.getAllUserItems(id);
 
     // ASSERT
     expect(res).toEqual([

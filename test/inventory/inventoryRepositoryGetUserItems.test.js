@@ -25,7 +25,7 @@ describe('InventoryRepositoryGetUserItems', () => {
     mockConnection.executeQuery
       .mockResolvedValueOnce(userRows);
     // ACT & ASSERT
-    await expect(inventoryRepository.getBy(id)).rejects.toMatchObject({
+    await expect(inventoryRepository.getByUserId(id)).rejects.toMatchObject({
       name: DOES_NOT_EXIST_ERROR,
       entity: INVENTORY,
       message: DOES_NOT_EXIST
@@ -41,7 +41,7 @@ describe('InventoryRepositoryGetUserItems', () => {
         throw SQLError;
       });
     // ACT & ASSERT
-    await expect(inventoryRepository.getBy(id)).rejects.toMatchObject({
+    await expect(inventoryRepository.getByUserId(id)).rejects.toMatchObject({
       name: FAILED_GETTING_ERROR,
       entity: INVENTORY
     });
@@ -57,7 +57,7 @@ describe('InventoryRepositoryGetUserItems', () => {
       .mockResolvedValueOnce(userRows)
       .mockResolvedValueOnce(rows);
     // ACT
-    const res = await inventoryRepository.getBy(id);
+    const res = await inventoryRepository.getByUserId(id);
 
     // ASSERT
     expect(res).toEqual(rows);
@@ -75,7 +75,7 @@ describe('InventoryRepositoryGetUserItems', () => {
       .mockResolvedValueOnce(userRows)
       .mockResolvedValueOnce(rows);
     // ACT
-    const res = await inventoryRepository.getBy(id);
+    const res = await inventoryRepository.getByUserId(id);
 
     // ASSERT
     expect(res).toEqual([

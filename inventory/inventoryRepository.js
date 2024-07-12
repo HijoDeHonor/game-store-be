@@ -7,7 +7,7 @@ export class InventoryRepository {
     this.mySQLConnection = mySQLConnection;
   }
 
-  async getBy (property) {
+  async getByUserId (property) {
     try {
       const userRows = await this.mySQLConnection.executeQuery(
         'SELECT userName FROM users WHERE id = (?);',
