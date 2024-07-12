@@ -34,4 +34,6 @@ export const TEST_USERNAME = 'userName';
 export const TEST_USERNAME_WITH_SPACE = 'user Name';
 export const TEST_DONT_EXIST_USERNAME = 'ThisUserDontExist';
 export const TEST_TOKEN = 'this is an awesome and super secure token, trust me.';
+export const TEST_TOKEN_INVALID = 'invalid.token';
 export const TEST_USER_ID = 'thisIsAnUserId';
+export const TEST_AUTHENTICATION_SUCCESS = 'You are authenticated';
