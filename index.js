@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import { errorHandler } from './errors/errorHandler/errorhandler.js';
 import { tryCatch } from './utils/tryCatch.js';
 import { createUserRouter } from './users/userRoutes.js';
+import { createInventoryRouter } from './inventory/inventoryRoutes.js';
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ app.use(cookieParser());
 app.disable('x-powered-by');
 
 app.use('/users', createUserRouter());
-
+app.use('/inventory', createInventoryRouter());
 app.get(
   '/',
   tryCatch(async (req, res) => {

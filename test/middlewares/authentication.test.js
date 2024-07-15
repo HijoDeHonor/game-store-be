@@ -1,4 +1,3 @@
-// authenticateJWT.test.js
 import { describe, it, expect, beforeEach } from 'vitest';
 import supertest from 'supertest';
 import express from 'express';

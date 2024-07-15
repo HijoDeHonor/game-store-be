@@ -24,4 +24,22 @@ export class InventoryRepository {
       throw error;
     }
   }
+
+  async getServerItems () {
+    try {
+      const rows = await this.mySQLConnection.executeQuery(
+      `SELECT * FROM items
+       ORDER BY Name ASC;`
+      );
+      if (!rows || rows.length === 0) {
+        throw new FailedGettingError(FAILED_GETTING, INVENTORY);
+      }
+      return rows;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING, INVENTORY, error);
+      }
+      throw error;
+    };
+  };
 }

@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TEST_USERNAME, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, INVALID_DATA, INVALID_DATA_ERROR, USERS } from '../../../utils/textConstants.js';
 import { UserService } from '../../../users/userService.js';
 import { UserRepository } from '../../../users/userRepository.js';
-import { MySQLConnection } from '../../../utils/mySQLConnection.js';
-import { DEFAULT_CONFIG } from '../../../utils/mySQLConfig.js';
+import { MySQLConnection } from '../../../utils/mySQL/mySQLConnection.js';
+import { DEFAULT_CONFIG } from '../../../utils/mySQL/mySQLConfig.js';
 import { InvalidDataError } from '../../../errors/errorTypes/invalidDataError.js';
 
 describe('userServiceLogin', () => {

@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import supertest from 'supertest';
 import express from 'express';
-import { InventoryController } from '../../inventory/inventoryController.js';
-import { TEST_USERNAME } from '../../utils/textConstants.js';
+import { InventoryController } from '../../../inventory/inventoryController.js';
+import { TEST_USERNAME } from '../../../utils/textConstants.js';
 
 const mockInventoryService = {
   getAllUserItems: vi.fn()
@@ -19,7 +19,7 @@ describe('InventoryController', () => {
 
     controller = new InventoryController({ inventoryService: mockInventoryService });
 
-    app.get('/inventory/:userName?', controller.getAllUserItems);
+    app.get('/inventory/users/:userName?', controller.getAllUserItems);
   });
 
   it('should be able to return an array with all the items that the user has', async () => {
@@ -29,7 +29,7 @@ describe('InventoryController', () => {
     mockInventoryService.getAllUserItems.mockResolvedValue(mockItems);
 
     // ACT
-    const res = await supertest(app).get(`/inventory/${TEST_USERNAME}`).expect(200);
+    const res = await supertest(app).get(`/inventory/users/${TEST_USERNAME}`).expect(200);
 
     // ASSERT
     expect(res.body).toEqual(mockItems);
@@ -43,7 +43,7 @@ describe('InventoryController', () => {
     mockInventoryService.getAllUserItems.mockResolvedValue(mockItems);
 
     // ACT
-    const res = await supertest(app).get(`/inventory/${TEST_USERNAME}`).expect(200);
+    const res = await supertest(app).get(`/inventory/users/${TEST_USERNAME}`).expect(200);
 
     // ASSERT
     expect(res.body).toEqual(mockItems);

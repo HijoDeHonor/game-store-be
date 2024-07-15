@@ -7,7 +7,8 @@ const inventoryController = container.resolve('inventoryController');
 export const createInventoryRouter = () => {
   const inventoryRouter = Router();
 
-  inventoryRouter.get('/:userName?', authenticateJWT, inventoryController.getAllUserItems);
+  inventoryRouter.get('/server/items', inventoryController.getServerItems);
+  inventoryRouter.get('/users/:userName?', authenticateJWT, inventoryController.getAllUserItems);
 
   return inventoryRouter;
 };

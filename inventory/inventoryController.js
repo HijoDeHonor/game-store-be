@@ -4,11 +4,18 @@ export class InventoryController {
   constructor ({ inventoryService }) {
     this.inventoryService = inventoryService;
     this.getAllUserItems = this.getAllUserItems.bind(this);
+    this.getServerItems = this.getServerItems.bind(this);
   }
 
   getAllUserItems = tryCatch(async (req, res) => {
     const { userName } = req.params;
     const items = await this.inventoryService.getAllUserItems(userName);
+    res.status(200).json(items);
+  });
+
+  getServerItems = tryCatch(async (req, res) => {
+    const items = await this.inventoryService.getServerItems();
+
     res.status(200).json(items);
   });
 }

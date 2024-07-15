@@ -2,9 +2,9 @@ import { describe, expect, it, beforeEach, vi, afterEach } from 'vitest';
 import { UserService } from '../../../users/userService.js';
 import { ALREADY_EXIST, ALREADY_EXIST_ERROR, FAILED_CREATING_ERROR, INVALID_DATA, INVALID_DATA_ERROR, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS } from '../../../utils/textConstants.js';
 import { UserRepository } from '../../../users/userRepository.js';
-import { MySQLConnection } from '../../../utils/mySQLConnection.js';
+import { MySQLConnection } from '../../../utils/mySQL/mySQLConnection.js';
 import { InvalidDataError } from '../../../errors/errorTypes/invalidDataError.js';
-import { DEFAULT_CONFIG } from '../../../utils/mySQLConfig.js';
+import { DEFAULT_CONFIG } from '../../../utils/mySQL/mySQLConfig.js';
 
 describe('userService.create', () => {
   let userService;
