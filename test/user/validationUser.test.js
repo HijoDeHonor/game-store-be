@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { userValidate } from '../../users/userValidator.js';
-import { TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, TEST_USERNAME_WITH_SPACE } from '../../utils/textConstants';
+import { userValidate } from '../../src/users/userValidator.js';
+import { TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, TEST_USERNAME_WITH_SPACE } from '../../src/utils/textConstants';
 
 describe('userValidate', () => {
   it('should return false if no arguments are provided', () => {

@@ -1,10 +1,10 @@
 import { describe, expect, it, beforeEach, vi, afterEach } from 'vitest';
-import { UserService } from '../../../users/userService.js';
-import { ALREADY_EXIST, ALREADY_EXIST_ERROR, FAILED_CREATING_ERROR, INVALID_DATA, INVALID_DATA_ERROR, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS } from '../../../utils/textConstants.js';
-import { UserRepository } from '../../../users/userRepository.js';
-import { MySQLConnection } from '../../../utils/mySQLConnection.js';
-import { InvalidDataError } from '../../../errors/errorTypes/invalidDataError.js';
-import { DEFAULT_CONFIG } from '../../../utils/mySQLConfig.js';
+import { UserService } from '../../../src/users/userService.js';
+import { ALREADY_EXIST, ALREADY_EXIST_ERROR, FAILED_CREATING_ERROR, INVALID_DATA, INVALID_DATA_ERROR, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS } from '../../../src/utils/textConstants.js';
+import { UserRepository } from '../../../src/users/userRepository.js';
+import { MySQLConnection } from '../../../src/utils//mySQL/mySQLConnection.js';
+import { InvalidDataError } from '../../../src/errors/errorTypes/invalidDataError.js';
+import { DEFAULT_CONFIG } from '../../../src/utils/mySQL/mySQLConfig.js';
 
 describe('userService.create', () => {
   let userService;

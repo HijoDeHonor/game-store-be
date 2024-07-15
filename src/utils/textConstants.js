@@ -24,7 +24,8 @@ export const DOES_NOT_EXIST_ERROR = 'DoesNotExistError';
 
 // ENTITYS:
 export const USERS = 'Users.';
-
+export const OFFERS = 'Offers.';
+export const INVENTORY = 'Inventory.';
 // TEST
 export const TEST_PASSWORD = 'password';
 export const TEST_PASSWORD_WITH_SPACE = 'pass word';

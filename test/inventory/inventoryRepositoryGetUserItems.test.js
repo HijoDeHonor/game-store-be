@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { FAILED_GETTING_ERROR, INVENTORY, TEST_USERNAME } from '../../utils/textConstants.js';
-import { InventoryRepository } from '../../inventory/inventoryRepository.js';
-import { SQLError } from '../../errors/errorTypes/SQLError.js';
+import { FAILED_GETTING_ERROR, INVENTORY, TEST_USERNAME } from '../../src/utils/textConstants.js';
+import { InventoryRepository } from '../../src/inventory/inventoryRepository.js';
+import { SQLError } from '../../src/errors/errorTypes/SQLError.js';
 
 describe('InventoryRepositoryGetUserItems', () => {
   let mockConnection;
