@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TEST_USERNAME, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, INVALID_DATA, INVALID_DATA_ERROR, USERS } from '../../../utils/textConstants.js';
-import { UserService } from '../../../users/userService.js';
-import { UserRepository } from '../../../users/userRepository.js';
-import { MySQLConnection } from '../../../utils/mySQLConnection.js';
-import { DEFAULT_CONFIG } from '../../../utils/mySQLConfig.js';
-import { InvalidDataError } from '../../../errors/errorTypes/invalidDataError.js';
+import { TEST_USERNAME, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, INVALID_DATA, INVALID_DATA_ERROR, USERS } from '../../../src/utils/textConstants.js';
+import { UserService } from '../../../src/users/userService.js';
+import { UserRepository } from '../../../src/users/userRepository.js';
+import { MySQLConnection } from '../../../src/utils/mySQL/mySQLConnection.js';
+import { DEFAULT_CONFIG } from '../../../src/utils/mySQL/mySQLConfig.js';
+import { InvalidDataError } from '../../../src/errors/errorTypes/invalidDataError.js';
 
 describe('userServiceLogin', () => {
   let userService;

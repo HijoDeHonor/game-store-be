@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR, INVALID_LOGIN_ERROR, INVALID_LOGIN, TEST_WRONG_PASSWORD } from '../../../utils/textConstants.js';
+import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR, INVALID_LOGIN_ERROR, INVALID_LOGIN, TEST_WRONG_PASSWORD } from '../../../src/utils/textConstants.js';
 import request from 'supertest';
 import { app } from '../../../index.js';
-import { UserRepository } from '../../../users/userRepository.js';
+import { UserRepository } from '../../../src/users/userRepository.js';
 
 describe('Login', () => {
   let userRepositoryMock;
