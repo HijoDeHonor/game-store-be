@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { MySQLConnection } from '../../src/utils/mySQL/mySQLConnection.js';
+import { MySQLConnection } from '../../../src/utils/mySQL/mySQLConnection.js';
 import request from 'supertest';
-import { app } from '../../index.js';
-import { SQLError } from '../../src/errors/errorTypes/SQLError.js';
-import { INTERNAL_SERVER_ERROR } from '../../src/utils/textConstants.js';
+import { app } from '../../../index.js';
+import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
+import { INTERNAL_SERVER_ERROR } from '../../../src/utils/textConstants.js';
 
 describe('getOffers', () => {
   let executeQueryMock;
@@ -53,7 +53,6 @@ describe('getOffers', () => {
     const res = await request(app)
       .get('/offers');
     // ASSERT
-    console.log(res.body);
     expect(res.status).toBe(500);
     expect(res.body).toMatchObject({
       message: INTERNAL_SERVER_ERROR

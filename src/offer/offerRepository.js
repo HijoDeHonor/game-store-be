@@ -1,5 +1,5 @@
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
+import { FAILED_GETTING, HAS_BEEN_DELETE, HAS_NOT_BEEN_DELETE, OFFERS, SQLERROR } from '../utils/textConstants.js';
 
 export class OfferRepository {
   constructor ({ mySQLConnection }) {
@@ -32,4 +32,28 @@ export class OfferRepository {
       } throw error;
     }
   };
+
+  async deleteOffer (id) {
+    try {
+      const deleteOffer = await this.mySQLConnection.executeQuery(
+        `START TRANSACTION;
+         DELETE FROM offer_items WHERE offer_id = (?);
+         DELETE FROM request_items WHERE offer_id = (?);
+
+         DELETE FROM offers WHERE id = (?);  
+
+        COMMIT;`
+        , [id, id, id]
+      );
+      return {
+        success: deleteOffer.success,
+        message: deleteOffer.success ? HAS_BEEN_DELETE : HAS_NOT_BEEN_DELETE,
+        rows: deleteOffer.affectedRows
+      };
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING, OFFERS);
+      } throw error;
+    }
+  }
 }

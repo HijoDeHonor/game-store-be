@@ -7,5 +7,6 @@ export const createOfferRouter = () => {
   const offerRouter = Router();
 
   offerRouter.get('/', offerController.getOffers);
+  offerRouter.delete('/:id?', offerController.deleteOffer);
   return offerRouter;
 };
