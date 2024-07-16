@@ -4,7 +4,7 @@ export class OfferService {
   }
 
   getOffers = async () => {
-    const offer = await this.offerRepository.getOffers();
-    return offer;
+    const offers = await this.offerRepository.getOffers();
+    return offers;
   };
 }
