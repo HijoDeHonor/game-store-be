@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR } from '../../../utils/textConstants.js';
+import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR } from '../../../src/utils/textConstants.js';
 import request from 'supertest';
 import { app } from '../../../index.js';
-import { UserRepository } from '../../../users/userRepository.js';
-import { AlreadyExistError } from '../../../errors/errorTypes/alreadyExistError.js';
-import { FailedCreatingError } from '../../../errors/errorTypes/failedCreatingError.js';
-import { SQLError } from '../../../errors/errorTypes/SQLError.js';
+import { UserRepository } from '../../../src/users/userRepository.js';
+import { AlreadyExistError } from '../../../src/errors/errorTypes/alreadyExistError.js';
+import { FailedCreatingError } from '../../../src/errors/errorTypes/failedCreatingError.js';
+import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
 
 describe('create', () => {
   let mockConnection;

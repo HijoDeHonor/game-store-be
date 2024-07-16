@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import supertest from 'supertest';
 import express from 'express';
-import { InventoryController } from '../../../inventory/inventoryController.js';
-import { TEST_USERNAME } from '../../../utils/textConstants.js';
+import { InventoryController } from '../../src/inventory/inventoryController.js';
+import { TEST_USERNAME } from '../../src/utils/textConstants.js';
 
 const mockInventoryService = {
   getAllUserItems: vi.fn()

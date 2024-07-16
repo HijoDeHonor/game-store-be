@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { InventoryRepository } from '../../../inventory/inventoryRepository.js';
-import { InventoryService } from '../../../inventory/inventoryService.js';
-import { TEST_USERNAME } from '../../../utils/textConstants.js';
+import { InventoryRepository } from '../../src/inventory/inventoryRepository.js';
+import { InventoryService } from '../../src/inventory/inventoryService.js';
+import { TEST_USERNAME } from '../../src/utils/textConstants.js';
 
 describe('inventoryServiceGetUserItems', () => {
   let inventoryRepositoryMock;
