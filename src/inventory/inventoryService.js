@@ -11,7 +11,11 @@ export class InventoryService {
       throw new InvalidDataError(INVALID_DATA, INVENTORY);
     };
     const items = await this.inventoryRepository.getByUserName(userName);
+    return items;
+  };
 
+  getServerItems = async () => {
+    const items = await this.inventoryRepository.getServerItems();
     return items;
   };
 }
