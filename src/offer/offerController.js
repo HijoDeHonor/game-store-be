@@ -1,6 +1,5 @@
-import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
-import { INVALID_DATA, OFFERS } from '../utils/textConstants.js';
 import { tryCatch } from '../utils/tryCatch.js';
+import { HAS_BEEN_DELETE } from '../../src/utils/textConstants.js';
 
 export class OfferController {
   constructor ({ offerService }) {
@@ -11,16 +10,12 @@ export class OfferController {
 
   getOffers = tryCatch(async (req, res) => {
     const offers = await this.offerService.getOffers();
-
     return res.status(200).json(offers);
   });
 
   deleteOffer = tryCatch(async (req, res) => {
     const id = req.params.id;
-    if (!id) {
-      throw new InvalidDataError(INVALID_DATA, OFFERS);
-    }
-    const isDelete = await this.offerService.deleteOffer(id);
-    return res.status(200).json(isDelete.message);
+    await this.offerService.deleteOffer(id);
+    return res.status(200).json(HAS_BEEN_DELETE);
   });
 }

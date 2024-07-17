@@ -1,5 +1,5 @@
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { FAILED_GETTING, HAS_BEEN_DELETE, HAS_NOT_BEEN_DELETE, OFFERS, SQLERROR } from '../utils/textConstants.js';
+import { FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
 
 export class OfferRepository {
   constructor ({ mySQLConnection }) {
@@ -9,7 +9,7 @@ export class OfferRepository {
   async getOffers () {
     try {
       const offerList = await this.mySQLConnection.executeQuery(
-     `SELECT
+        `SELECT
        o.id AS offer_id,
        o.userNamePoster,
        oi.item_Name AS offer_item_name,
@@ -23,7 +23,9 @@ export class OfferRepository {
        LEFT JOIN offer_items oi ON o.id = oi.offer_id
        LEFT JOIN items i ON oi.item_Name = i.Name
        LEFT JOIN request_items ri ON o.id = ri.offer_id
-       LEFT JOIN items ir ON ri.item_Name = ir.Name;`
+       LEFT JOIN items ir ON ri.item_Name = ir.Name
+     WHERE
+       o.deleted = FALSE;`
       );
       return offerList;
     } catch (error) {
@@ -35,21 +37,16 @@ export class OfferRepository {
 
   async deleteOffer (id) {
     try {
-      const deleteOffer = await this.mySQLConnection.executeQuery(
-        `START TRANSACTION;
-         DELETE FROM offer_items WHERE offer_id = (?);
-         DELETE FROM request_items WHERE offer_id = (?);
-
-         DELETE FROM offers WHERE id = (?);  
-
-        COMMIT;`
-        , [id, id, id]
+      const rows = await this.mySQLConnection.executeQuery(
+        `UPDATE offers
+         SET deleted = TRUE
+         WHERE id = UUID_TO_BIN(?);`
+        , [id]
       );
-      return {
-        success: deleteOffer.success,
-        message: deleteOffer.success ? HAS_BEEN_DELETE : HAS_NOT_BEEN_DELETE,
-        rows: deleteOffer.affectedRows
-      };
+      if (rows.affectedRows === 0) {
+        return false;
+      }
+      return true;
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING, OFFERS);

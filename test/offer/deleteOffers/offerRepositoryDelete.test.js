@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { OfferRepository } from '../../../src/offer/offerRepository.js';
-import { HAS_BEEN_DELETE, HAS_NOT_BEEN_DELETE, TEST_ID_OFFER } from '../../../src/utils/textConstants.js';
+import { TEST_ID_OFFER } from '../../../src/utils/textConstants.js';
 
 describe('offerRepositoryDelete', () => {
   let mockConnection;
   let offerRepository;
   const rowsPositive = {
-    affectedRows: 3,
+    affectedRows: 1,
     success: true
   };
   const rowsNegative = {
@@ -25,32 +25,23 @@ describe('offerRepositoryDelete', () => {
     vi.restoreAllMocks();
   });
 
-  it('Should be able to return an object with some rows afected and a success true', async () => {
+  it('Should be able to return true if the offer is deleted', async () => {
     // arrange
     mockConnection.executeQuery
       .mockResolvedValue(rowsPositive);
     // act
     const res = await offerRepository.deleteOffer(id);
     // assert
-    expect(res).toMatchObject({
-      success: true,
-      message: HAS_BEEN_DELETE,
-      rows: 3
-    });
+    expect(res).toBe(true);
   });
 
-  it('should be able to return an object with no rows afected and a success false', async () => {
+  it('should be able to return false if the offer is not deleted', async () => {
     // arrange
     mockConnection.executeQuery
       .mockResolvedValue(rowsNegative);
     // act
     const res = await offerRepository.deleteOffer(id);
-    console.log(res);
     // assert
-    expect(res).toMatchObject({
-      success: false,
-      message: HAS_NOT_BEEN_DELETE,
-      rows: 0
-    });
+    expect(res).toBe(false);
   });
 });

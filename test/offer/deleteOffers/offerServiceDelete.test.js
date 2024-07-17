@@ -3,19 +3,14 @@ import { OfferRepository } from '../../../src/offer/offerRepository.js';
 import { TEST_ID_OFFER } from '../../../src/utils/textConstants.js';
 import { OfferService } from '../../../src/offer/offerService.js';
 import { FailedToDeleteError } from '../../../src/errors/ErrorTypes/failedToDeleteError.js';
+import { InvalidDataError } from '../../../src/errors/ErrorTypes/invalidDataError.js';
 
 describe('offerServiceDelete', () => {
   let offerRepositoryMock;
   let offerService;
   const id = TEST_ID_OFFER;
-  const rowsPositive = {
-    affectedRows: 3,
-    success: true
-  };
-  const rowsNegative = {
-    affectedRows: 0,
-    success: false
-  };
+  const rowsPositive = true;
+  const rowsNegative = false;
 
   beforeEach(() => {
     offerRepositoryMock = vi.spyOn(OfferRepository.prototype, 'deleteOffer');
@@ -24,13 +19,18 @@ describe('offerServiceDelete', () => {
   afterEach(() => {
     vi.resetAllMocks();
   });
-  it('should be able to return a object whit some rows afected and a success message', async () => {
+
+  it('should trow an error if no id is pased as parameter', async () => {
+    // arrange
+    // act & expect
+    await expect(offerService.deleteOffer()).rejects.toThrow(InvalidDataError);
+  });
+
+  it('should be able to delete an offer without throwing errors', async () => {
     // arrange
     offerRepositoryMock.mockResolvedValue(rowsPositive);
-    // act
-    const res = await offerService.deleteOffer(id);
-    // assert
-    expect(res).toEqual(rowsPositive);
+    // act & assert
+    await expect(offerService.deleteOffer(id)).resolves.not.toThrow();
   });
 
   it('should be able to return an error if the success message is false', async () => {
