@@ -53,7 +53,6 @@ describe('getOffers', () => {
     const res = await request(app)
       .get('/offers');
     // ASSERT
-    console.log(res.body);
     expect(res.status).toBe(500);
     expect(res.body).toMatchObject({
       message: INTERNAL_SERVER_ERROR

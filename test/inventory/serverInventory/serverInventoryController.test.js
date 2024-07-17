@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import request from 'supertest';
 import { app } from '../../../index.js';
-import { InventoryRepository } from '../../../inventory/inventoryRepository.js';
-import { FailedGettingError } from '../../../errors/errorTypes/failedGettingError.js';
-import { FAILED_GETTING, FAILED_GETTING_ERROR, INVENTORY } from '../../../utils/textConstants.js';
+import { InventoryRepository } from '../../../src/inventory/inventoryRepository.js';
+import { FailedGettingError } from '../../../src/errors/errorTypes/failedGettingError.js';
+import { FAILED_GETTING, FAILED_GETTING_ERROR, INVENTORY } from '../../../src/utils/textConstants.js';
 
 describe('serverInvetonryControllerGetItems', () => {
   let inventoryRepositoryMock;

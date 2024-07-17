@@ -3,7 +3,7 @@ import supertest from 'supertest';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
-import { authenticateJWT } from '../../src/middlewares/authentication.js';
+import { authenticateJWT } from '../../middlewares/authentication.js';
 import dotenv from 'dotenv';
 import { SECRET_TOKEN_KEY, TEST_AUTHENTICATION_SUCCESS, TEST_TOKEN_INVALID } from '../../src/utils/textConstants.js';
 dotenv.config();

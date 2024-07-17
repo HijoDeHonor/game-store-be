@@ -13,6 +13,7 @@ export const ALREADY_EXIST = 'Already exist.';
 export const DOES_NOT_EXIST = 'Does not exist.';
 export const SQLERROR = 'SQLError';
 export const FAILED_GETTING = 'Failed getting';
+export const FAILED_ADDING = 'failed adding';
 
 // ERROR TYPES:
 export const FAILED_CREATING_ERROR = 'FailedCreatingError';
@@ -21,7 +22,7 @@ export const ALREADY_EXIST_ERROR = 'AlreadyExistError';
 export const INVALID_DATA_ERROR = 'InvalidDataError';
 export const INVALID_LOGIN_ERROR = 'InvalidLoginError';
 export const DOES_NOT_EXIST_ERROR = 'DoesNotExistError';
-
+export const FAILED_ADDING_ERROR = 'FailedAddingError';
 // ENTITYS:
 export const USERS = 'Users.';
 export const OFFERS = 'Offers.';
@@ -37,6 +38,8 @@ export const TEST_TOKEN = 'this is an awesome and super secure token, trust me.'
 export const TEST_TOKEN_INVALID = 'invalid.token';
 export const TEST_USER_ID = 'thisIsAnUserId';
 export const TEST_AUTHENTICATION_SUCCESS = 'You are authenticated';
-
+export const TEST_ITEM = 'sword';
 //
 export const SECRET_TOKEN_KEY = 'iam-a-super-secure-secret-word';
+// Messagges
+export const ADD_SUCCESS = 'Added successfully.';

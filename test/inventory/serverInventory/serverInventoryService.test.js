@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { InventoryRepository } from '../../../inventory/inventoryRepository.js';
-import { InventoryService } from '../../../inventory/inventoryService.js';
+import { InventoryRepository } from '../../../src/inventory/inventoryRepository.js';
+import { InventoryService } from '../../../src/inventory/inventoryService.js';
 
 describe('serverInvetonryServiceGetItems', () => {
   let inventoryRepositoryMock;
