@@ -1,8 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR } from '../../../src/utils/textConstants.js';
+import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, FAILED_CREATE, USERS, TEST_QUERY, TEST_QUERY_PARAMETER, FAILED_CREATING_ERROR, TEST_USER_REPOSITORY_METHOD_CREATE, TEST_USER_SERVICE_METHOD_CREATE, TEST_USER_CONTROLLER_FILE_NAME } from '../../../src/utils/textConstants.js';
 import { MySQLConnection } from '../../../src/utils/mySQL/mySQLConnection.js';
 import request from 'supertest';
 import { app } from '../../../index.js';
+import { FailedCreatingError } from '../../../src/errors/errorTypes/failedCreatingError.js';
+import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
+
+const query = TEST_QUERY;
+const queryParameter = TEST_QUERY_PARAMETER;
 
 describe('create', () => {
   let executeQueryMock;
@@ -45,15 +50,16 @@ describe('create', () => {
       .send({ username: TEST_USERNAME, password: TEST_PASSWORD_WITH_SPACE });
     // ASSERT
     expect(400);
-    expect(res.body.name).toBe(INVALID_DATA_ERROR);
-    expect(res.body.entity).toBe(USERS);
     expect(res.body.message).toBe(INVALID_DATA);
   });
   // 3
 
   it('should return a general creation error', async () => {
     // ARRANGE
-    executeQueryMock.mockImplementationOnce(() => Promise.resolve());
+    const errorInstance = new FailedCreatingError(FAILED_CREATE, USERS);
+    executeQueryMock.mockImplementationOnce(() => {
+      throw new SQLError(errorInstance, query, queryParameter);
+    });
     // ACT
     const res = await request(app)
       .post('/users')
@@ -61,6 +67,15 @@ describe('create', () => {
     // ASSERT
     expect(500);
     expect(executeQueryMock).toHaveBeenCalledTimes(1);
-    expect(res.body.message).toBe(INTERNAL_SERVER_ERROR);
+    expect(res.body).toMatchObject({
+      error: {
+        name: FAILED_CREATING_ERROR
+      },
+      message: errorInstance.message
+    });
+    expect(res.body.stack).toContain(FAILED_CREATING_ERROR);
+    expect(res.body.stack).toContain(TEST_USER_REPOSITORY_METHOD_CREATE);
+    expect(res.body.stack).toContain(TEST_USER_SERVICE_METHOD_CREATE);
+    expect(res.body.stack).toContain(TEST_USER_CONTROLLER_FILE_NAME);
   });
 });

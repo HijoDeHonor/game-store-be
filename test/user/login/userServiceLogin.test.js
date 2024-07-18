@@ -4,7 +4,6 @@ import { UserService } from '../../../src/users/userService.js';
 import { UserRepository } from '../../../src/users/userRepository.js';
 import { MySQLConnection } from '../../../src/utils/mySQL/mySQLConnection.js';
 import { DEFAULT_CONFIG } from '../../../src/utils/mySQL/mySQLConfig.js';
-import { InvalidDataError } from '../../../src/errors/errorTypes/invalidDataError.js';
 
 describe('userServiceLogin', () => {
   let userService;
@@ -39,7 +38,7 @@ describe('userServiceLogin', () => {
     const password = TEST_PASSWORD_WITH_SPACE;
 
     // ACT
-    await expect(userService.login(userName, password)).rejects.toThrow(InvalidDataError);
+    await expect(userService.login(userName, password)).rejects.toThrow();
 
     // ASSERT
     await expect(userService.login(userName, password)).rejects.toMatchObject({

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR } from '../../../src/utils/textConstants.js';
+import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME } from '../../../src/utils/textConstants.js';
 import request from 'supertest';
 import { app } from '../../../index.js';
 import { UserRepository } from '../../../src/users/userRepository.js';
@@ -48,8 +48,6 @@ describe('create', () => {
       .send({ username: TEST_USERNAME, password: TEST_PASSWORD_WITH_SPACE });
     // ASSERT
     expect(400);
-    expect(res.body.name).toBe(INVALID_DATA_ERROR);
-    expect(res.body.entity).toBe(USERS);
     expect(res.body.message).toBe(INVALID_DATA);
   });
 

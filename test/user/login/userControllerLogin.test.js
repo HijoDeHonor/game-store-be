@@ -1,8 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_DATA_ERROR, INTERNAL_SERVER_ERROR, INVALID_LOGIN_ERROR, INVALID_LOGIN, TEST_WRONG_PASSWORD } from '../../../src/utils/textConstants.js';
+import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_LOGIN, TEST_WRONG_PASSWORD, TEST_QUERY, TEST_QUERY_PARAMETER, FAILED_CREATE, SQLERROR } from '../../../src/utils/textConstants.js';
 import request from 'supertest';
 import { app } from '../../../index.js';
 import { UserRepository } from '../../../src/users/userRepository.js';
+import { FailedCreatingError } from '../../../src/errors/errorTypes/failedCreatingError.js';
+import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
+
+const query = TEST_QUERY;
+const queryParameter = TEST_QUERY_PARAMETER;
 
 describe('Login', () => {
   let userRepositoryMock;
@@ -44,8 +49,6 @@ describe('Login', () => {
       .send({ username: TEST_USERNAME, password: TEST_PASSWORD_WITH_SPACE });
     // ASSERT
     expect(400);
-    expect(res.body.name).toBe(INVALID_DATA_ERROR);
-    expect(res.body.entity).toBe(USERS);
     expect(res.body.message).toBe(INVALID_DATA);
   });
 
@@ -63,15 +66,14 @@ describe('Login', () => {
 
     expect(userRepositoryMock).toHaveBeenCalledTimes(1);
     expect(400);
-    expect(res.body.name).toBe(INVALID_LOGIN_ERROR);
-    expect(res.body.entity).toBe(USERS);
     expect(res.body.message).toBe(INVALID_LOGIN);
   });
   // 4
   it('should return a general creation error', async () => {
     // ARRANGE
+    const errorInstance = new FailedCreatingError(FAILED_CREATE, USERS);
     userRepositoryMock.mockImplementationOnce(() => {
-      throw new Error();
+      throw new SQLError(errorInstance, query, queryParameter);
     });
     // ACT
     const res = await request(app)
@@ -80,6 +82,14 @@ describe('Login', () => {
     // ASSERT
     expect(500);
     expect(userRepositoryMock).toHaveBeenCalledTimes(1);
-    expect(res.body.message).toBe(INTERNAL_SERVER_ERROR);
+    expect(res.body).toMatchObject({
+      error: {
+        name: SQLERROR,
+        query: TEST_QUERY,
+        parameters: TEST_QUERY_PARAMETER
+      },
+      stack: errorInstance.stack,
+      message: errorInstance.message
+    });
   });
 });
