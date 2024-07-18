@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { FAILED_GETTING, OFFERS } from '../../src/utils/textConstants.js';
-import { OfferRepository } from '../../src/offer/offerRepository.js';
-import { SQLError } from '../../src/errors/errorTypes/SQLError.js';
+import { FAILED_GETTING, OFFERS } from '../../../src/utils/textConstants.js';
+import { OfferRepository } from '../../../src/offer/offerRepository.js';
+import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
 
 describe('InventoryRepositoryGetUserItems', () => {
   let mockConnection;

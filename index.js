@@ -5,6 +5,7 @@ import { errorHandler } from './src/errors/errorHandler/errorhandler.js';
 import { createUserRouter } from './src/users/userRoutes.js';
 import { createOfferRouter } from './src/offer/offerRoutes.js';
 import { createInventoryRouter } from './src/inventory/inventoryRoutes.js';
+
 dotenv.config();
 
 export const app = express();

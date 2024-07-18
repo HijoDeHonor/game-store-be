@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { OfferRepository } from '../../src/offer/offerRepository.js';
-import { OfferService } from '../../src/offer/offerService.js';
+import { OfferRepository } from '../../../src/offer/offerRepository.js';
+import { OfferService } from '../../../src/offer/offerService.js';
 
 describe('offerServiceAllOffers', () => {
   const offers = [

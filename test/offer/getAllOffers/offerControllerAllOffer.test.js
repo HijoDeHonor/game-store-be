@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { MySQLConnection } from '../../src/utils/mySQL/mySQLConnection.js';
+import { MySQLConnection } from '../../../src/utils/mySQL/mySQLConnection.js';
 import request from 'supertest';
 import { app } from '../../index.js';
 import { SQLError } from '../../src/errors/errorTypes/SQLError.js';
