@@ -34,6 +34,7 @@ export const TEST_DONT_EXIST_USERNAME = 'ThisUserDontExist';
 export const FAILED_DELETE_ERROR = 'FailedToDeleteError';
 
 // TEST
+export const TEST_ITEM = 'Sword';
 export const TEST_ID_OFFER = 'offerId';
 export const TEST_PASSWORD = 'password';
 export const TEST_PASSWORD_WITH_SPACE = 'pass word';
