@@ -1,5 +1,6 @@
+import moment from 'moment';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
+import { DATE_FORMAT, FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
 
 export class OfferRepository {
   constructor ({ mySQLConnection }) {
@@ -37,11 +38,13 @@ export class OfferRepository {
 
   async deleteOffer (id) {
     try {
+      const date = moment().format(DATE_FORMAT);
       const rows = await this.mySQLConnection.executeQuery(
         `UPDATE offers
          SET deleted = TRUE
+             date = ?
          WHERE id = UUID_TO_BIN(?);`
-        , [id]
+        , [date, id]
       );
       if (rows.affectedRows === 0) {
         return false;

@@ -45,5 +45,6 @@ export const TEST_ID_OFFER = 'offerId';
 // MESSAGES
 export const HAS_BEEN_DELETE = 'Has been delete successfully.';
 export const HAS_NOT_BEEN_DELETE = 'Has not been delete.';
-//
+// VALUES
+export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const SECRET_TOKEN_KEY = 'iam-a-super-secure-secret-word';

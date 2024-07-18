@@ -1,4 +1,56 @@
-node_modules
+# Dependencias de Node.js
+node_modules/
+
+# Archivos de configuración del entorno
 .env
+.env.local
+.env.*.local
+
+# Archivos de logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Directorios de construcción
+dist/
+build/
+out/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos del editor
+.idea/
+.vscode/
+*.swp
+
+# Archivos de configuración de herramientas
+.eslintcache
+.cache/
+
+# Archivos de rendimiento y perfiles
+coverage/
+*.prof
+
+# Archivos de base de datos locales o backups
+*.sql
+*.sqlite
+*.bak
+
+# Archivos de claves privadas o certificados
+*.key
+*.pem
+*.crt
+
+# Archivos generados por contenedores o máquinas virtuales
+Dockerfile
+docker-compose.override.yml
+.vagrant/
+
+# Archivos de documentación generada
+docs/
+
 package-lock.json
-settings.json
