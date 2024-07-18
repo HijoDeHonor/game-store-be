@@ -1,5 +1,6 @@
-import { FAILED_GETTING, INVENTORY, SQLERROR } from '../utils/textConstants.js';
+import { FAILED_ADDING, FAILED_GETTING, INVENTORY, SQLERROR } from '../utils/textConstants.js';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
+import { FailedAddingError } from '../errors/ErrorTypes/failedAddingError.js';
 
 export class InventoryRepository {
   constructor ({ mySQLConnection }) {
@@ -42,4 +43,25 @@ export class InventoryRepository {
       throw error;
     };
   };
+
+  async addItemToUser (userName, item, quantity) {
+    try {
+      const rows = await this.mySQLConnection.executeQuery(
+      ` INSERT INTO user_items (user_userName, item_Name, Quantity)
+        VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE Quantity = Quantity + VALUES(Quantity);
+      `,
+      [userName, item, quantity]
+      );
+      if (rows.length === 0) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedAddingError(FAILED_ADDING, INVENTORY, error);
+      }
+      throw error;
+    }
+  }
 }

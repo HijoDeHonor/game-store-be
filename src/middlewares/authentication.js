@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { SECRET_TOKEN_KEY } from '../utils/textConstants.js';
+import { SECRET_TOKEN_KEY } from '../src/utils/textConstants.js';
 
 dotenv.config();
 
