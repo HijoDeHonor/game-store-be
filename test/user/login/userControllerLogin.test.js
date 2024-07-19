@@ -63,7 +63,6 @@ describe('Login', () => {
       .send({ userName: TEST_USERNAME, password: TEST_WRONG_PASSWORD });
 
     // ASSERTS
-
     expect(userRepositoryMock).toHaveBeenCalledTimes(1);
     expect(400);
     expect(res.body.message).toBe(INVALID_LOGIN);
