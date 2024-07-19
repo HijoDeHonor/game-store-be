@@ -1,11 +1,34 @@
-import { FAILED_ADDING, FAILED_GETTING, INVENTORY, SQLERROR } from '../utils/textConstants.js';
+import { FAILED_ADDING, FAILED_DELETING, FAILED_GETTING, INVENTORY, SQLERROR } from '../utils/textConstants.js';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
 import { FailedAddingError } from '../errors/ErrorTypes/failedAddingError.js';
+import { FailedToDeleteError } from '../errors/ErrorTypes/failedToDeleteError.js';
 
 export class InventoryRepository {
   constructor ({ mySQLConnection }) {
     this.mySQLConnection = mySQLConnection;
   }
+
+  // server
+
+  async getServerItems () {
+    try {
+      const rows = await this.mySQLConnection.executeQuery(
+      `SELECT * FROM items
+       ORDER BY Name ASC;`
+      );
+      if (!rows || rows.length === 0) {
+        throw new FailedGettingError(FAILED_GETTING, INVENTORY);
+      }
+      return rows;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING, INVENTORY, error);
+      }
+      throw error;
+    };
+  };
+
+  // users
 
   async getByUserName (property) {
     try {
@@ -26,24 +49,6 @@ export class InventoryRepository {
     }
   }
 
-  async getServerItems () {
-    try {
-      const rows = await this.mySQLConnection.executeQuery(
-      `SELECT * FROM items
-       ORDER BY Name ASC;`
-      );
-      if (!rows || rows.length === 0) {
-        throw new FailedGettingError(FAILED_GETTING, INVENTORY);
-      }
-      return rows;
-    } catch (error) {
-      if (error.name === SQLERROR) {
-        throw new FailedGettingError(FAILED_GETTING, INVENTORY, error);
-      }
-      throw error;
-    };
-  };
-
   async addItemToUser (userName, item, quantity) {
     try {
       const rows = await this.mySQLConnection.executeQuery(
@@ -60,6 +65,52 @@ export class InventoryRepository {
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedAddingError(FAILED_ADDING, INVENTORY, error);
+      }
+      throw error;
+    }
+  }
+
+  async removeItemToUser (userName, item, quantity) {
+    try {
+      const rows = await this.mySQLConnection.executeQuery(
+      `
+      SELECT Quantity
+      FROM user_items
+      WHERE user_userName = ?
+      AND item_Name = ?;
+      `, [userName, item]
+      );
+      if (rows.length === 0) {
+        return false;
+      }
+      const actualQuantity = rows.Quantity;
+      if (actualQuantity < quantity) {
+        return false;
+      }
+      if (actualQuantity === quantity) {
+        const res = await this.mySQLConnection.executeQuery(
+        `
+        DELETE FROM user_items
+        WHERE user_userName = ?
+        AND item_Name = ?;
+        `, [userName, item]
+        );
+        return res.affectedRows > 0;
+      } else {
+        const updatedQuantity = actualQuantity - quantity;
+        const res = await this.mySQLConnection.executeQuery(
+        `
+        UPDATE user_items
+        SET Quantity = ?
+        WHERE user_userName = ?
+        AND item_Name = ?;
+        `, [updatedQuantity, userName, item]
+        );
+        return res.affectedRows > 0;
+      }
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedToDeleteError(FAILED_DELETING, INVENTORY, error);
       }
       throw error;
     }
