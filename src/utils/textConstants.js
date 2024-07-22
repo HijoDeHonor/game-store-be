@@ -35,6 +35,7 @@ export const FAILED_DELETE_ERROR = 'FailedToDeleteError';
 
 // TEST
 export const TEST_ITEM = 'Sword';
+export const TEST_ITEM2 = 'shield';
 export const TEST_ID_OFFER = 'offerId';
 export const TEST_PASSWORD = 'password';
 export const TEST_PASSWORD_WITH_SPACE = 'pass word';
@@ -63,3 +64,4 @@ export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const SECRET_TOKEN_KEY = 'iam-a-super-secure-secret-word';
 // Messagges
 export const ADD_SUCCESS = 'Added successfully.';
+export const CREATE_SUCCESS = 'Created successfully';

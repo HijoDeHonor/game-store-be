@@ -10,10 +10,30 @@ export class MySQLConnection {
     let connection;
     try {
       connection = await mysql.createConnection(this.defaultConfig);
-      const [rows, fields] = await connection.query(query, parameters);
+      const [rows] = await connection.query(query, parameters);
       return rows;
     } catch (error) {
       throw new SQLError(error, query, parameters);
+    } finally {
+      if (connection) {
+        await connection.end();
+      }
+    }
+  }
+
+  async executeTransaction (transactionFunction) {
+    let connection;
+    try {
+      connection = await mysql.createConnection(this.defaultConfig);
+      await connection.beginTransaction();
+      const result = await transactionFunction(connection);
+      await connection.commit();
+      return result;
+    } catch (error) {
+      if (connection) {
+        await connection.rollback();
+      }
+      throw error;
     } finally {
       if (connection) {
         await connection.end();
