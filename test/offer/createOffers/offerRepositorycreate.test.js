@@ -20,8 +20,8 @@ describe('offerRepositoryCreate', () => {
   let mySQLConnection;
 
   beforeEach(() => {
-    mySQLConnection = new MySQLConnection({ defaultConfig: {} }); // Inicializa con la configuración necesaria
-    vi.spyOn(mySQLConnection, 'executeTransaction'); // Espía el método en la instancia
+    mySQLConnection = new MySQLConnection({ defaultConfig: {} });
+    vi.spyOn(mySQLConnection, 'executeTransaction');
     offerRepository = new OfferRepository({ mySQLConnection });
   });
 

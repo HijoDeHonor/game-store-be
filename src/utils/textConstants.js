@@ -19,6 +19,7 @@ export const PASSWORD_REQUIRED = 'Password is required';
 export const SQLERROR = 'SQLError';
 export const USERNAME_CONTAIN_SPACE = 'User Name must not contain spaces';
 export const USERNAME_REQUIRED = 'User Name is required';
+export const INSUFFICIENT_QUANTITY = 'User dont have enough items';
 
 // ERROR TYPES:
 export const ALREADY_EXIST_ERROR = 'AlreadyExistError';

@@ -10,8 +10,8 @@ export class OfferController {
   }
 
   create = tryCatch(async (req, res) => {
-    const { userName, offer, request } = req.body;
-    await this.offerService.create(userName, offer, request);
+    const { userName, offer, request, id } = req.body;
+    await this.offerService.create(userName, offer, request, id);
     return res.status(201).json(CREATE_SUCCESS);
   });
 
