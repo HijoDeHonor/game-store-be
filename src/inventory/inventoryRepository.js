@@ -120,9 +120,10 @@ export class InventoryRepository {
         WHERE user_userName = ? AND item_Name = ?
         `, [userName, name]
       );
-      if (!rows.length === 0) {
-        return false;
-      } return rows[0].Quantity;
+      if (rows.length === 0) {
+        return 0;
+      }
+      return rows[0].Quantity;
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING, INVENTORY, error);

@@ -9,25 +9,23 @@ export class OfferService {
     this.inventoryRepository = inventoryRepository;
   }
 
-  create = async (userName, offer, request, id) => {
-    if ((!userName) || (offer.length === 0) || (request.length === 0) || (!id)) {
+  create = async (id, userName, offer, request) => {
+    if ((!id) || (!userName) || (offer.length === 0) || (request.length === 0)) {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
     for (const item of offer) {
-      const { name, Quantity } = item;
-      const actualQuantity = await this.inventoryRepository.getQuantity(userName, name);
-      if (Quantity > actualQuantity) {
+      const actualQuantity = await this.inventoryRepository.getQuantity(userName, item.name);
+      if (item.Quantity > actualQuantity) {
         throw new InvalidDataError(INSUFFICIENT_QUANTITY, OFFERS);
       }
     }
     for (const item of offer) {
-      const { name, Quantity } = item;
-      const isDelete = await this.inventoryRepository.removeItemToUser(userName, name, Quantity);
+      const isDelete = await this.inventoryRepository.removeItemToUser(userName, item.name, item.Quantity);
       if (!isDelete) {
         throw new FailedCreatingError(FAILED_CREATE, OFFERS);
       }
     }
-    const isCreated = await this.offerRepository.create(userName, offer, request);
+    const isCreated = await this.offerRepository.create(id, userName, offer, request);
     if (isCreated !== true) {
       throw new FailedCreatingError(FAILED_CREATE, OFFERS);
     }
