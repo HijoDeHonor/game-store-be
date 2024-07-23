@@ -7,8 +7,11 @@ export class OfferService {
     this.offerRepository = offerRepository;
   }
 
-  getOffers = async () => {
-    const offers = await this.offerRepository.getOffers();
+  getOffers = async (limit, offset) => {
+    if ((!limit) || (!offset)) {
+      throw new InvalidDataError(INVALID_DATA, OFFERS);
+    }
+    const offers = await this.offerRepository.getOffers(limit, offset);
     return offers;
   };
 
