@@ -5,30 +5,12 @@ import { app } from '../../../index.js';
 import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
 import { FAILED_GETTING, FAILED_GETTING_ERROR, OFFERS, TEST_OFFER_CONTROLLER_FILE_NAME, TEST_OFFER_REPOSITORY_METHOD_GET_ALL, TEST_OFFER_SERVICE_METHOD_GET_ALL, TEST_QUERY, TEST_QUERY_PARAMETER } from '../../../src/utils/textConstants.js';
 import { FailedGettingError } from '../../../src/errors/errorTypes/failedGettingError.js';
+import { executeQueryExample, executeQueryExampleParse } from './executeQueryExample.js';
 
 const query = TEST_QUERY;
 const queryParameter = TEST_QUERY_PARAMETER;
 describe('getOffers', () => {
   let executeQueryMock;
-  const offers = [
-    {
-      offer_id: 1,
-      userNamePoster: 'SaturDon',
-      offer_items: [
-        {
-          item_name: 'Martillo de Thor',
-          quantity: 1,
-          img: 'https://cdn-icons-png.freepik.com/256/12092/12092522.png?uid=R125020544&ga=GA1.1.297410512.1711637426&'
-        }
-      ],
-      request_items: [
-        {
-          item_name: 'Arco de cristal',
-          quantity: 1,
-          img: 'https://cdn-icons-png.freepik.com/256/12569/12569010.png?uid=R125020544&ga=GA1.1.297410512.1711637426&'
-        }
-      ]
-    }];
 
   beforeEach(() => {
     executeQueryMock = vi.spyOn(MySQLConnection.prototype, 'executeQuery');
@@ -38,13 +20,13 @@ describe('getOffers', () => {
   });
   it('should return the offers with a status of 200', async () => {
     // ARRANGE
-    executeQueryMock.mockImplementationOnce(() => Promise.resolve(offers));
+    executeQueryMock.mockImplementationOnce(() => Promise.resolve(executeQueryExample));
     // ACT
     const res = await request(app)
       .get('/offers');
     // ARRANGE
     expect(res.status).toBe(200);
-    expect(res.body).toEqual(offers);
+    expect(res.body).toEqual(executeQueryExampleParse);
   });
 
   it('should reject with an error if the executequerry fails', async () => {
