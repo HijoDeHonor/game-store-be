@@ -14,7 +14,7 @@ export class OfferRepository {
       const newOffer = await this.mySQLConnection.executeTransaction(async (connection) => {
         const date = moment().format(DATE_FORMAT);
         await this.mySQLConnection.executeQuery(
-          'INSERT INTO offers (id, userNamePoster, date) VALUES (UUID_TO_BIN(?), ?, ?)',
+          'INSERT INTO offers (id, userNamePoster, createDate) VALUES (UUID_TO_BIN(?), ?, ?)',
           [id, userName, date]
         );
 
