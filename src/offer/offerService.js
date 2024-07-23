@@ -1,11 +1,35 @@
+import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 import { FailedToDeleteError } from '../errors/ErrorTypes/failedToDeleteError.js';
-import { InvalidDataError } from '../errors/ErrorTypes/invalidDataError.js';
-import { FAILED_DELETING, INVALID_DATA, OFFERS } from '../utils/textConstants.js';
+import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
+import { FAILED_CREATE, FAILED_DELETING, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS } from '../utils/textConstants.js';
 
 export class OfferService {
-  constructor ({ offerRepository }) {
+  constructor ({ offerRepository, inventoryRepository }) {
     this.offerRepository = offerRepository;
+    this.inventoryRepository = inventoryRepository;
   }
+
+  create = async (id, userName, offer, request) => {
+    if ((!id) || (!userName) || (offer.length === 0) || (request.length === 0)) {
+      throw new InvalidDataError(INVALID_DATA, OFFERS);
+    }
+    for (const item of offer) {
+      const actualQuantity = await this.inventoryRepository.getQuantity(userName, item.name);
+      if (item.Quantity > actualQuantity) {
+        throw new InvalidDataError(INSUFFICIENT_QUANTITY, OFFERS);
+      }
+    }
+    for (const item of offer) {
+      const isDelete = await this.inventoryRepository.removeItemToUser(userName, item.name, item.Quantity);
+      if (!isDelete) {
+        throw new FailedCreatingError(FAILED_CREATE, OFFERS);
+      }
+    }
+    const isCreated = await this.offerRepository.create(id, userName, offer, request);
+    if (isCreated !== true) {
+      throw new FailedCreatingError(FAILED_CREATE, OFFERS);
+    }
+  };
 
   getOffers = async () => {
     const offers = await this.offerRepository.getOffers();

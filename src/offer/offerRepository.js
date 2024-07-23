@@ -1,10 +1,50 @@
 import moment from 'moment';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { DATE_FORMAT, FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
+import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
+import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 
 export class OfferRepository {
   constructor ({ mySQLConnection }) {
     this.mySQLConnection = mySQLConnection;
+  }
+
+  async create (id, userName, offer, request) {
+    try {
+      const newOffer = await this.mySQLConnection.executeTransaction(async () => {
+        await this.mySQLConnection.executeQuery(
+          'INSERT INTO offers (id, userNamePoster) VALUES (UUID_TO_BIN(?), ?)',
+          [id, userName]
+        );
+
+        const offerItemsQueries = offer.map(item =>
+          this.mySQLConnection.executeQuery(
+            'INSERT INTO offer_items (offer_id, item_Name, Quantity) VALUES (UUID_TO_BIN(?), ?, ?)',
+            [id, item.name, item.Quantity]
+          )
+        );
+        await Promise.all(offerItemsQueries);
+
+        const requestItemsQueries = request.map(item =>
+          this.mySQLConnection.executeQuery(
+            'INSERT INTO request_items (offer_id, item_Name, Quantity) VALUES (UUID_TO_BIN(?), ?, ?)',
+            [id, item.name, item.Quantity]
+          )
+        );
+        await Promise.all(requestItemsQueries);
+
+        return { success: true };
+      });
+
+      if (!newOffer.success) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedCreatingError(FAILED_CREATE, OFFERS, error);
+      }
+      throw error;
+    }
   }
 
   async getOffers () {
@@ -86,19 +126,17 @@ export class OfferRepository {
       const date = moment().format(DATE_FORMAT);
       const rows = await this.mySQLConnection.executeQuery(
         `UPDATE offers
-         SET deleted = TRUE
+         SET deleted = TRUE,
              date = ?
-         WHERE id = UUID_TO_BIN(?);`
-        , [date, id]
+         WHERE id = UUID_TO_BIN(?);`,
+        [date, id]
       );
-      if (rows.affectedRows === 0) {
-        return false;
-      }
-      return true;
+      return rows.affectedRows > 0;
     } catch (error) {
       if (error.name === SQLERROR) {
-        throw new FailedGettingError(FAILED_GETTING, OFFERS);
-      } throw error;
+        throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
+      }
+      throw error;
     }
   }
 }

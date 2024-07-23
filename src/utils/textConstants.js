@@ -20,6 +20,7 @@ export const PASSWORD_REQUIRED = 'Password is required';
 export const SQLERROR = 'SQLError';
 export const USERNAME_CONTAIN_SPACE = 'User Name must not contain spaces';
 export const USERNAME_REQUIRED = 'User Name is required';
+export const INSUFFICIENT_QUANTITY = 'User dont have enough items';
 
 // ERROR TYPES:
 export const ALREADY_EXIST_ERROR = 'AlreadyExistError';
@@ -29,6 +30,7 @@ export const FAILED_CREATING_ERROR = 'FailedCreatingError';
 export const FAILED_GETTING_ERROR = 'FailedGettingError';
 export const INVALID_DATA_ERROR = 'InvalidDataError';
 export const INVALID_LOGIN_ERROR = 'InvalidLoginError';
+export const FAILED_ADDING_ERROR = 'FailedAddingError';
 
 // TEST constants
 export const TEST_AUTHENTICATION_SUCCESS = 'You are authenticated';
@@ -37,6 +39,7 @@ export const FAILED_DELETE_ERROR = 'FailedToDeleteError';
 
 // TEST
 export const TEST_ITEM = 'Sword';
+export const TEST_ITEM2 = 'shield';
 export const TEST_ID_OFFER = 'offerId';
 export const TEST_PASSWORD = 'password';
 export const TEST_PASSWORD_WITH_SPACE = 'pass word';
@@ -65,3 +68,4 @@ export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const SECRET_TOKEN_KEY = 'iam-a-super-secure-secret-word';
 // Messagges
 export const ADD_SUCCESS = 'Added successfully.';
+export const CREATE_SUCCESS = 'Created successfully';

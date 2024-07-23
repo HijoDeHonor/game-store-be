@@ -1,12 +1,19 @@
 import { tryCatch } from '../utils/tryCatch.js';
-import { HAS_BEEN_DELETE } from '../../src/utils/textConstants.js';
+import { CREATE_SUCCESS, HAS_BEEN_DELETE } from '../../src/utils/textConstants.js';
 
 export class OfferController {
   constructor ({ offerService }) {
     this.offerService = offerService;
     this.getOffers = this.getOffers.bind(this);
     this.deleteOffer = this.deleteOffer.bind(this);
+    this.create = this.create.bind(this);
   }
+
+  create = tryCatch(async (req, res) => {
+    const { id, userName, offer, request } = req.body;
+    await this.offerService.create(id, userName, offer, request);
+    return res.status(201).json(CREATE_SUCCESS);
+  });
 
   getOffers = tryCatch(async (req, res) => {
     const offers = await this.offerService.getOffers();
