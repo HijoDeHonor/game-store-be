@@ -12,9 +12,10 @@ export class OfferRepository {
   async create (id, userName, offer, request) {
     try {
       const newOffer = await this.mySQLConnection.executeTransaction(async (connection) => {
+        const date = moment().format(DATE_FORMAT);
         await this.mySQLConnection.executeQuery(
-          'INSERT INTO offers (id, userNamePoster) VALUES (UUID_TO_BIN(?), ?)',
-          [id, userName]
+          'INSERT INTO offers (id, userNamePoster, date) VALUES (UUID_TO_BIN(?), ?, ?)',
+          [id, userName, date]
         );
 
         const offerDeleteItem = offer.map(item =>
