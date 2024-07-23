@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MySQLConnection } from '../../../src/utils/mySQL/mySQLConnection.js';
 import { OfferRepository } from '../../../src/offer/offerRepository.js';
 import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
-import { TEST_ITEM, TEST_ITEM2, TEST_USERNAME } from '../../../src/utils/textConstants.js';
+import { TEST_ID_OFFER, TEST_ITEM, TEST_ITEM2, TEST_USERNAME } from '../../../src/utils/textConstants.js';
 import { FailedCreatingError } from '../../../src/errors/errorTypes/failedCreatingError.js';
 
 const offer = [{
@@ -14,6 +14,8 @@ const request = [{
   name: TEST_ITEM2,
   Quantity: 2
 }];
+
+const id = TEST_ID_OFFER;
 
 describe('offerRepositoryCreate', () => {
   let offerRepository;
@@ -36,14 +38,14 @@ describe('offerRepositoryCreate', () => {
     });
 
     // Act & assert
-    await expect(offerRepository.create(TEST_USERNAME, offer, request)).rejects.toThrow(FailedCreatingError);
+    await expect(offerRepository.create(id, TEST_USERNAME, offer, request)).rejects.toThrow(FailedCreatingError);
   });
 
   it('should return true on sql success', async () => {
     // arrange
     mySQLConnection.executeTransaction.mockImplementationOnce(() => Promise.resolve({ success: true }));
     // act
-    const res = await offerRepository.create(TEST_USERNAME, offer, request);
+    const res = await offerRepository.create(id, TEST_USERNAME, offer, request);
     // assert
     expect(res).toBe(true);
   });

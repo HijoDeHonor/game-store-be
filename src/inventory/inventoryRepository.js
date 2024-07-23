@@ -66,7 +66,7 @@ export class InventoryRepository {
     }
   }
 
-  async removeItemToUser (userName, item, quantity) {
+  async removeItemToUser (userName, item, quantity, connection) {
     try {
       const rows = await this.mySQLConnection.executeQuery(
         `
@@ -74,7 +74,7 @@ export class InventoryRepository {
       FROM user_items
       WHERE user_userName = ?
       AND item_Name = ?;
-      `, [userName, item]
+      `, [userName, item], connection
       );
       if (rows.length === 0) {
         return false;
@@ -89,18 +89,18 @@ export class InventoryRepository {
         DELETE FROM user_items
         WHERE user_userName = ?
         AND item_Name = ?;
-        `, [userName, item]
+        `, [userName, item], connection
         );
         return res.affectedRows > 0;
       } else {
         const updatedQuantity = actualQuantity - quantity;
         const res = await this.mySQLConnection.executeQuery(
-          `
+        `
         UPDATE user_items
         SET Quantity = ?
         WHERE user_userName = ?
         AND item_Name = ?;
-        `, [updatedQuantity, userName, item]
+        `, [updatedQuantity, userName, item], connection
         );
         return res.affectedRows > 0;
       }

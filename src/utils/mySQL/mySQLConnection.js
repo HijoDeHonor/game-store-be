@@ -6,17 +6,20 @@ export class MySQLConnection {
     this.defaultConfig = defaultConfig;
   }
 
-  async executeQuery (query, parameters) {
-    let connection;
+  async executeQuery (query, parameters, connection) {
+    let conn = connection;
     try {
-      connection = await mysql.createConnection(this.defaultConfig);
-      const [rows] = await connection.query(query, parameters);
+      if (!conn) {
+        conn = await mysql.createConnection(this.defaultConfig);
+      }
+      conn = await mysql.createConnection(this.defaultConfig);
+      const [rows] = await conn.query(query, parameters);
       return rows;
     } catch (error) {
       throw new SQLError(error, query, parameters);
     } finally {
-      if (connection) {
-        await connection.end();
+      if (conn) {
+        await conn.end();
       }
     }
   }
@@ -26,7 +29,7 @@ export class MySQLConnection {
     try {
       connection = await mysql.createConnection(this.defaultConfig);
       await connection.beginTransaction();
-      const result = await transactionFunction();
+      const result = await transactionFunction(connection);
       await connection.commit();
       return result;
     } catch (error) {
