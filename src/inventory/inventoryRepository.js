@@ -14,7 +14,7 @@ export class InventoryRepository {
         `SELECT items.Name, items.Img, user_items.Quantity
         FROM user_items
         JOIN items ON user_items.item_Name = items.Name
-        WHERE user_items.user_userName = (?);
+        WHERE user_items.user_userName = (?)
         ORDER BY items.name ASC;`,
         [property]
       );
@@ -79,7 +79,7 @@ export class InventoryRepository {
       if (rows.length === 0) {
         return false;
       }
-      const actualQuantity = rows.Quantity;
+      const actualQuantity = rows[0].Quantity;
       if (actualQuantity < quantity) {
         return false;
       }
@@ -116,8 +116,8 @@ export class InventoryRepository {
     try {
       const rows = await this.mySQLConnection.executeQuery(
         `
-        SELECT Quantity from user_items
-        WHERE user_userName = ? and item_Name = ?
+        SELECT Quantity FROM user_items
+        WHERE user_userName = ? AND item_Name = ?
         `, [userName, name]
       );
       if (!rows.length === 0) {

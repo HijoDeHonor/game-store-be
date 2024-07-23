@@ -11,25 +11,25 @@ export class OfferRepository {
 
   async create (userName, offer, request) {
     try {
-      const newOffer = await this.mySQLConnection.executeTransaction(async (connection) => {
+      const newOffer = await this.mySQLConnection.executeTransaction(async () => {
         const offerId = uuidv4();
-        await connection.executeQuery(
+        await this.mySQLConnection.executeQuery(
           'INSERT INTO offers (id, userNamePoster) VALUES (UUID_TO_BIN(?), ?)',
           [offerId, userName]
         );
 
         const offerItemsQueries = offer.map(item =>
-          connection.executeQuery(
+          this.mySQLConnection.executeQuery(
             'INSERT INTO offer_items (offer_id, item_Name, Quantity) VALUES (UUID_TO_BIN(?), ?, ?)',
-            [offerId, item.name, item.quantity]
+            [offerId, item.name, item.Quantity]
           )
         );
         await Promise.all(offerItemsQueries);
 
         const requestItemsQueries = request.map(item =>
-          connection.executeQuery(
+          this.mySQLConnection.executeQuery(
             'INSERT INTO request_items (offer_id, item_Name, Quantity) VALUES (UUID_TO_BIN(?), ?, ?)',
-            [offerId, item.name, item.quantity]
+            [offerId, item.name, item.Quantity]
           )
         );
         await Promise.all(requestItemsQueries);
@@ -51,26 +51,70 @@ export class OfferRepository {
 
   async getOffers () {
     try {
-      const offerList = await this.mySQLConnection.executeQuery(
-        `SELECT
-           o.id AS offer_id,
-           o.userNamePoster,
-           oi.item_Name AS offer_item_name,
-           oi.Quantity AS offer_quantity,
-           i.Img AS offer_img,
-           ri.item_Name AS request_item_name,
-           ri.Quantity AS request_quantity,
-           ir.Img AS request_img
-         FROM
-           offers o
-           LEFT JOIN offer_items oi ON o.id = oi.offer_id
-           LEFT JOIN items i ON oi.item_Name = i.Name
-           LEFT JOIN request_items ri ON o.id = ri.offer_id
-           LEFT JOIN items ir ON ri.item_Name = ir.Name
-         WHERE
-           o.deleted = FALSE;`
+      const offers = await this.mySQLConnection.executeQuery(
+        `SELECT 
+     BIN_TO_UUID(o.id) AS offer_id,
+     o.userNamePoster AS user_name,
+     oi.item_Name AS offer_item_name,
+     oi.Quantity AS offer_quantity,
+     i.Img AS offer_item_img,
+     ri.item_Name AS request_item_name,
+     ri.Quantity AS request_quantity,
+     ir.Img AS request_item_img
+   FROM 
+     offers o
+     LEFT JOIN offer_items oi ON o.id = oi.offer_id
+     LEFT JOIN items i ON oi.item_Name = i.Name
+     LEFT JOIN request_items ri ON o.id = ri.offer_id
+     LEFT JOIN items ir ON ri.item_Name = ir.Name
+   WHERE 
+     o.deleted = FALSE
+   ORDER BY 
+     o.id, offer_item_name, request_item_name;`
       );
-      return offerList;
+
+      const groupedOffers = offers.reduce((acc, row) => {
+        if (!acc[row.offer_id]) {
+          acc[row.offer_id] = {
+            id: row.offer_id,
+            userName: row.user_name,
+            offerItems: [],
+            requestItems: [],
+            offerItemsSet: new Set(),
+            requestItemsSet: new Set()
+          };
+        }
+
+        if (row.offer_item_name) {
+          const itemKey = row.offer_item_name;
+          if (!acc[row.offer_id].offerItemsSet.has(itemKey)) {
+            acc[row.offer_id].offerItemsSet.add(itemKey);
+            acc[row.offer_id].offerItems.push({
+              Name: itemKey,
+              Quantity: row.offer_quantity,
+              img: row.offer_item_img
+            });
+          }
+        }
+
+        if (row.request_item_name) {
+          const itemKey = row.request_item_name;
+          if (!acc[row.offer_id].requestItemsSet.has(itemKey)) {
+            acc[row.offer_id].requestItemsSet.add(itemKey);
+            acc[row.offer_id].requestItems.push({
+              Name: itemKey,
+              Quantity: row.request_quantity,
+              img: row.request_item_img
+            });
+          }
+        }
+
+        return acc;
+      }, {});
+
+      const result = Object.values(groupedOffers).map(({ offerItemsSet, requestItemsSet, ...rest }) => rest);
+
+      return result;
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING, OFFERS, error);

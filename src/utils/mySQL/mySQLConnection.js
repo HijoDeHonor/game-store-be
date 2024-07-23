@@ -26,7 +26,7 @@ export class MySQLConnection {
     try {
       connection = await mysql.createConnection(this.defaultConfig);
       await connection.beginTransaction();
-      const result = await transactionFunction(connection);
+      const result = await transactionFunction();
       await connection.commit();
       return result;
     } catch (error) {
