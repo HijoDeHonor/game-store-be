@@ -39,15 +39,15 @@ describe('OfferControllerCreate', () => {
     const res = await supertest(app)
       .post('/offers')
       .send({
+        id,
         userName: TEST_USERNAME,
         offer,
-        request,
-        id
+        request
       });
 
     // expect
     expect(res.status).toBe(201);
     expect(res.body).toBe(CREATE_SUCCESS);
-    expect(mockOfferService.create).toBeCalledWith(TEST_USERNAME, offer, request, id);
+    expect(mockOfferService.create).toBeCalledWith(id, TEST_USERNAME, offer, request);
   });
 });

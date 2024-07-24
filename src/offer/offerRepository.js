@@ -4,22 +4,29 @@ import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, OFFERS, SQLERROR } from '..
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 
 export class OfferRepository {
-  constructor ({ mySQLConnection }) {
+  constructor ({ mySQLConnection, inventoryRepository }) {
     this.mySQLConnection = mySQLConnection;
+    this.inventoryRepository = inventoryRepository;
   }
 
   async create (id, userName, offer, request) {
     try {
-      const newOffer = await this.mySQLConnection.executeTransaction(async () => {
+      const newOffer = await this.mySQLConnection.executeTransaction(async (connection) => {
+        const date = moment().format(DATE_FORMAT);
         await this.mySQLConnection.executeQuery(
-          'INSERT INTO offers (id, userNamePoster) VALUES (UUID_TO_BIN(?), ?)',
-          [id, userName]
+          'INSERT INTO offers (id, userNamePoster, createDate) VALUES (UUID_TO_BIN(?), ?, ?)',
+          [id, userName, date]
         );
+
+        const offerDeleteItem = offer.map(item =>
+          this.inventoryRepository.removeItemToUser(userName, item.name, item.Quantity, connection)
+        );
+        await Promise.all(offerDeleteItem);
 
         const offerItemsQueries = offer.map(item =>
           this.mySQLConnection.executeQuery(
             'INSERT INTO offer_items (offer_id, item_Name, Quantity) VALUES (UUID_TO_BIN(?), ?, ?)',
-            [id, item.name, item.Quantity]
+            [id, item.name, item.Quantity], connection
           )
         );
         await Promise.all(offerItemsQueries);
@@ -27,7 +34,7 @@ export class OfferRepository {
         const requestItemsQueries = request.map(item =>
           this.mySQLConnection.executeQuery(
             'INSERT INTO request_items (offer_id, item_Name, Quantity) VALUES (UUID_TO_BIN(?), ?, ?)',
-            [id, item.name, item.Quantity]
+            [id, item.name, item.Quantity], connection
           )
         );
         await Promise.all(requestItemsQueries);

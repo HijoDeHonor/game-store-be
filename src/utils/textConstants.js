@@ -30,7 +30,6 @@ export const FAILED_CREATING_ERROR = 'FailedCreatingError';
 export const FAILED_GETTING_ERROR = 'FailedGettingError';
 export const INVALID_DATA_ERROR = 'InvalidDataError';
 export const INVALID_LOGIN_ERROR = 'InvalidLoginError';
-export const FAILED_ADDING_ERROR = 'FailedAddingError';
 
 // TEST constants
 export const TEST_AUTHENTICATION_SUCCESS = 'You are authenticated';

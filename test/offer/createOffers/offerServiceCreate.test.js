@@ -21,11 +21,9 @@ const id = TEST_ID_OFFER;
 describe('OfferServiceCreate', () => {
   let offerRepositoryMock;
   let inventoryRepositoryMock;
-  let removeItemToUserMock;
   let offerService;
   beforeEach(() => {
     inventoryRepositoryMock = vi.spyOn(InventoryRepository.prototype, 'getQuantity');
-    removeItemToUserMock = vi.spyOn(InventoryRepository.prototype, 'removeItemToUser');
     offerRepositoryMock = vi.spyOn(OfferRepository.prototype, 'create');
     offerService = new OfferService({
       offerRepository: new OfferRepository({ mySQLConnection: {} }),
@@ -39,10 +37,10 @@ describe('OfferServiceCreate', () => {
 
   it('should throw InvalidDataError when one of the parameters is missing', async () => {
     // act & assert
-    await expect(offerService.create(TEST_USERNAME, offer, '', id)).rejects.toThrow(InvalidDataError);
-    await expect(offerService.create('', offer, request, id)).rejects.toThrow(InvalidDataError);
-    await expect(offerService.create(TEST_USERNAME, '', request, id)).rejects.toThrow(InvalidDataError);
-    await expect(offerService.create(TEST_USERNAME, offer, request)).rejects.toThrow(InvalidDataError);
+    await expect(offerService.create(id, TEST_USERNAME, offer, '')).rejects.toThrow(InvalidDataError);
+    await expect(offerService.create(id, '', offer, request)).rejects.toThrow(InvalidDataError);
+    await expect(offerService.create(id, TEST_USERNAME, '', request)).rejects.toThrow(InvalidDataError);
+    await expect(offerService.create('', TEST_USERNAME, offer, request)).rejects.toThrow(InvalidDataError);
   });
 
   it('should reject with FailedCreatingError when the call to inventoryRepository fails', async () => {
@@ -58,36 +56,26 @@ describe('OfferServiceCreate', () => {
     // arrange
     inventoryRepositoryMock.mockResolvedValueOnce(4);
     // act & assert
-    await expect(offerService.create(TEST_USERNAME, offer, request, id)).rejects.toThrow(InvalidDataError);
-  });
-
-  it('should throw an error if cant delete the item', async () => {
-    // arrange
-    inventoryRepositoryMock.mockResolvedValueOnce(4);
-    removeItemToUserMock.mockResolvedValueOnce(false);
-    // act
-    await expect(offerService.create(TEST_USERNAME, offer, request, id)).rejects.toThrow();
+    await expect(offerService.create(id, TEST_USERNAME, offer, request)).rejects.toThrow(InvalidDataError);
   });
 
   it('should create offer successfully when all conditions are met', async () => {
     // arrange
     inventoryRepositoryMock.mockResolvedValueOnce(10);
-    removeItemToUserMock.mockResolvedValueOnce(true);
     offerRepositoryMock.mockResolvedValueOnce(true);
 
     // act & assert
-    await expect(offerService.create(TEST_USERNAME, offer, request, id)).resolves.toBeUndefined();
+    await expect(offerService.create(id, TEST_USERNAME, offer, request)).resolves.toBeUndefined();
 
     expect(inventoryRepositoryMock).toHaveBeenCalledWith(TEST_USERNAME, TEST_ITEM);
-    expect(offerRepositoryMock).toHaveBeenCalledWith(TEST_USERNAME, offer, request);
+    expect(offerRepositoryMock).toHaveBeenCalledWith(id, TEST_USERNAME, offer, request);
   });
 
   it('should throw FailedCreatingError if offer creation fails', async () => {
     // arrange
     inventoryRepositoryMock.mockResolvedValueOnce(10);
-    removeItemToUserMock.mockResolvedValueOnce(true);
     offerRepositoryMock.mockResolvedValueOnce(false);
     // act & assert
-    await expect(offerService.create(TEST_USERNAME, offer, request, id)).rejects.toThrow(FailedCreatingError);
+    await expect(offerService.create(id, TEST_USERNAME, offer, request)).rejects.toThrow(FailedCreatingError);
   });
 });

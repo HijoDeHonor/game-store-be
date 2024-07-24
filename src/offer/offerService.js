@@ -19,12 +19,6 @@ export class OfferService {
         throw new InvalidDataError(INSUFFICIENT_QUANTITY, OFFERS);
       }
     }
-    for (const item of offer) {
-      const isDelete = await this.inventoryRepository.removeItemToUser(userName, item.name, item.Quantity);
-      if (!isDelete) {
-        throw new FailedCreatingError(FAILED_CREATE, OFFERS);
-      }
-    }
     const isCreated = await this.offerRepository.create(id, userName, offer, request);
     if (isCreated !== true) {
       throw new FailedCreatingError(FAILED_CREATE, OFFERS);
