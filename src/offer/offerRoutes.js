@@ -6,7 +6,7 @@ const offerController = container.resolve('offerController');
 export const createOfferRouter = () => {
   const offerRouter = Router();
 
-  offerRouter.get('/:limit/:offset', offerController.getOffers);
+  offerRouter.get('/:page', offerController.getOffers);
   offerRouter.delete('/:id?', offerController.deleteOffer);
   return offerRouter;
 };

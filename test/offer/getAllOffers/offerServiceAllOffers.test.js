@@ -20,7 +20,7 @@ describe('offerServiceAllOffers', () => {
     offerRepositoryMock.mockResolvedValue(executeQueryExampleParse);
 
     // ACT
-    const res = await offerService.getOffers('10', '0');
+    const res = await offerService.getOffers('1');
 
     // ASSERT
     expect(res).toEqual(executeQueryExampleParse);

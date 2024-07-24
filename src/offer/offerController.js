@@ -9,9 +9,8 @@ export class OfferController {
   }
 
   getOffers = tryCatch(async (req, res) => {
-    const limit = req.params.limit;
-    const offset = req.params.offset;
-    const offers = await this.offerService.getOffers(limit, offset);
+    const page = req.params.page;
+    const offers = await this.offerService.getOffers(page);
     return res.status(200).json(offers);
   });
 

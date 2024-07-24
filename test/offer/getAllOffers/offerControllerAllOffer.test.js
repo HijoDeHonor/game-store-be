@@ -26,7 +26,7 @@ describe('getOffers', () => {
       .mockImplementationOnce(() => Promise.resolve(executeQueryExampleThirdCall));
     // ACT
     const res = await request(app)
-      .get('/offers/10/0');
+      .get('/offers/1');
     // ARRANGE
     expect(res.status).toBe(200);
     expect(res.body).toEqual(executeQueryExampleParse);
@@ -40,7 +40,7 @@ describe('getOffers', () => {
     });
     // ACT
     const res = await request(app)
-      .get('/offers/10/0');
+      .get('/offers/1');
     // ASSERT
     expect(res.status).toBe(500);
     expect(res.body).toMatchObject({

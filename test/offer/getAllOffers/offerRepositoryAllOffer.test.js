@@ -27,7 +27,7 @@ describe('OfferRepositoryGetOffers', () => {
       .mockImplementationOnce(() => Promise.resolve(executeQueryExampleThirdCall));
 
     // Act
-    const res = await offerRepository.getOffers(10, 0);
+    const res = await offerRepository.getOffers('1');
 
     // Assert
     expect(res).toEqual(executeQueryExampleParse);
@@ -41,7 +41,7 @@ describe('OfferRepositoryGetOffers', () => {
     });
 
     // Act & Assert
-    await expect(offerRepository.getOffers(10, 0)).rejects.toMatchObject({
+    await expect(offerRepository.getOffers('1')).rejects.toMatchObject({
       message: `${FAILED_GETTING}: ${OFFERS}`
     });
   });

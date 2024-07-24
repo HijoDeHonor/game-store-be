@@ -1,5 +1,5 @@
 import { FailedToDeleteError } from '../errors/ErrorTypes/failedToDeleteError.js';
-import { InvalidDataError } from '../errors/ErrorTypes/invalidDataError.js';
+import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
 import { FAILED_DELETING, INVALID_DATA, OFFERS } from '../utils/textConstants.js';
 
 export class OfferService {
@@ -7,11 +7,11 @@ export class OfferService {
     this.offerRepository = offerRepository;
   }
 
-  getOffers = async (limit, offset) => {
-    if ((!limit) || (!offset)) {
+  getOffers = async (page) => {
+    if (!page) {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
-    const offers = await this.offerRepository.getOffers(limit, offset);
+    const offers = await this.offerRepository.getOffers(page);
     return offers;
   };
 
