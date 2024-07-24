@@ -25,6 +25,13 @@ export class OfferService {
     }
   };
 
+  complete = async (id, userNameTrader) => {
+    if ((!id) || (!userNameTrader)) {
+      throw new InvalidDataError(INVALID_DATA, OFFERS);
+    }
+    await this.offerRepository.complete(id, userNameTrader);
+  };
+
   getOffers = async () => {
     const offers = await this.offerRepository.getOffers();
     return offers;

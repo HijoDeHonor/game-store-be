@@ -8,6 +8,7 @@ export const ALREADY_EXIST = 'Already exist';
 export const DOES_NOT_EXIST = 'Does not exist';
 export const ERROR_CREATING_USER = 'Error creating the new User';
 export const FAILED_ADDING = 'Failed Adding';
+export const FAILED_COMPLETING = 'Failed completing';
 export const FAILED_CREATE = 'Failed to create';
 export const FAILED_DELETING = 'Failed deleting';
 export const FAILED_GETTING = 'Failed getting';
@@ -26,6 +27,7 @@ export const INSUFFICIENT_QUANTITY = 'User dont have enough items';
 export const ALREADY_EXIST_ERROR = 'AlreadyExistError';
 export const DOES_NOT_EXIST_ERROR = 'DoesNotExistError';
 export const FAILED_ADDING_ERROR = 'FailedAddingError';
+export const FAILED_COMPLETING_ERROR = 'FailedCompletingError';
 export const FAILED_CREATING_ERROR = 'FailedCreatingError';
 export const FAILED_GETTING_ERROR = 'FailedGettingError';
 export const INVALID_DATA_ERROR = 'InvalidDataError';
@@ -62,6 +64,7 @@ export const TEST_USER_SERVICE_METHOD_CREATE = 'UserService.create';
 // MESSAGES
 export const HAS_BEEN_DELETE = 'Has been delete successfully.';
 export const HAS_NOT_BEEN_DELETE = 'Has not been delete.';
+export const HAS_BEEN_COMPLETE = 'Has been complete successfully';
 // VALUES
 export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const SECRET_TOKEN_KEY = 'iam-a-super-secure-secret-word';

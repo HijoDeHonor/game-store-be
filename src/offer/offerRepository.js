@@ -1,7 +1,9 @@
 import moment from 'moment';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
+import { DATE_FORMAT, FAILED_COMPLETING, FAILED_CREATE, FAILED_GETTING, INVALID_DATA, OFFERS, SQLERROR } from '../utils/textConstants.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
+import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
+import { FailedCompletingError } from '../errors/ErrorTypes/failedCompleting.js';
 
 export class OfferRepository {
   constructor ({ mySQLConnection, inventoryRepository }) {
@@ -128,17 +130,100 @@ export class OfferRepository {
     }
   }
 
-  async deleteOffer (id) {
+  async deleteOffer (id, connection) {
     try {
       const date = moment().format(DATE_FORMAT);
       const rows = await this.mySQLConnection.executeQuery(
         `UPDATE offers
          SET deleted = TRUE,
-             date = ?
-         WHERE id = UUID_TO_BIN(?);`,
-        [date, id]
+             deleteDate = ?
+         WHERE id = UUID_TO_BIN(?)`,
+        [date, id], connection
       );
       return rows.affectedRows > 0;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
+      }
+      throw error;
+    }
+  }
+
+  async complete (id, userNameTrader) {
+    try {
+      const activeOfferUserNameResult = await this.mySQLConnection.executeQuery(
+        `
+        SELECT userNamePoster
+        FROM offers
+        WHERE id = UUID_TO_BIN(?)
+        AND deleted = false;
+        `, [id]
+      );
+
+      if (activeOfferUserNameResult.length === 0) {
+        throw new InvalidDataError(INVALID_DATA, OFFERS);
+      }
+
+      const activeOfferUserName = activeOfferUserNameResult[0].userNamePoster;
+
+      const offerToCompleteTransaction = await this.mySQLConnection.executeTransaction(async (connection) => {
+        const offerItems = await this.mySQLConnection.executeQuery(
+          `SELECT
+            oi.item_Name AS offerItemName,
+            oi.Quantity AS offerQuantity
+           FROM
+            offers o
+           LEFT JOIN offer_items oi ON o.id = oi.offer_id
+           LEFT JOIN items i ON oi.item_Name = i.Name
+           WHERE
+            o.id = UUID_TO_BIN(?)`, [id], connection
+        );
+
+        if (offerItems.length === 0) {
+          throw FailedGettingError(FailedGettingError, OFFERS);
+        }
+        console.log(offerItems);
+        const requestItems = await this.mySQLConnection.executeQuery(
+          `SELECT
+            ri.item_Name AS requestItemName,
+            ri.Quantity AS requestQuantity
+           FROM
+            offers o
+           LEFT JOIN request_items ri ON o.id = ri.offer_id
+           LEFT JOIN items ir ON ri.item_Name = ir.Name
+           WHERE
+            o.id = UUID_TO_BIN(?)`, [id], connection
+        );
+        console.log(requestItems);
+        if (requestItems.length === 0) {
+          throw FailedGettingError(FailedGettingError, OFFERS);
+        }
+
+        const addItemsToTheUserPoster = requestItems.map(item =>
+          this.inventoryRepository.addItemToUser(activeOfferUserName, item.requestItemName, item.requestQuantity, connection)
+        );
+        await Promise.all(addItemsToTheUserPoster);
+
+        const addItemsToTheUserTrader = offerItems.map(item =>
+          this.inventoryRepository.addItemToUser(userNameTrader, item.offerItemName, item.offerQuantity, connection)
+        );
+        await Promise.all(addItemsToTheUserTrader);
+
+        const removeItemTotheUserTrader = requestItems.map(item =>
+          this.inventoryRepository.removeItemToUser(userNameTrader, item.requestItemName, item.requestQuantity, connection)
+        );
+
+        await Promise.all(removeItemTotheUserTrader);
+
+        const isDelete = await this.deleteOffer(id, connection);
+
+        if (isDelete) {
+          return { success: true };
+        }
+      });
+      if (!offerToCompleteTransaction.success) {
+        throw new FailedCompletingError(FAILED_COMPLETING, OFFERS);
+      }
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING, OFFERS, error);

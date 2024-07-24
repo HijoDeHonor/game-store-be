@@ -1,5 +1,5 @@
 import { tryCatch } from '../utils/tryCatch.js';
-import { CREATE_SUCCESS, HAS_BEEN_DELETE } from '../../src/utils/textConstants.js';
+import { CREATE_SUCCESS, HAS_BEEN_COMPLETE, HAS_BEEN_DELETE } from '../../src/utils/textConstants.js';
 
 export class OfferController {
   constructor ({ offerService }) {
@@ -7,7 +7,15 @@ export class OfferController {
     this.getOffers = this.getOffers.bind(this);
     this.deleteOffer = this.deleteOffer.bind(this);
     this.create = this.create.bind(this);
+    this.complete = this.complete.bind(this);
   }
+
+  complete = tryCatch(async (req, res) => {
+    const id = req.params.id;
+    const userNameTrader = req.body.userName;
+    await this.offerService.complete(id, userNameTrader);
+    return res.status(200).json(HAS_BEEN_COMPLETE);
+  });
 
   create = tryCatch(async (req, res) => {
     const { id, userName, offer, request } = req.body;
