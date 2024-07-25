@@ -5,7 +5,7 @@ import { app } from '../../../index.js';
 import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
 import { FAILED_GETTING, FAILED_GETTING_ERROR, OFFERS, TEST_OFFER_CONTROLLER_FILE_NAME, TEST_OFFER_REPOSITORY_METHOD_GET_ALL, TEST_OFFER_SERVICE_METHOD_GET_ALL, TEST_QUERY, TEST_QUERY_PARAMETER } from '../../../src/utils/textConstants.js';
 import { FailedGettingError } from '../../../src/errors/errorTypes/failedGettingError.js';
-import { executeQueryExample, executeQueryExampleParse } from './executeQueryExample.js';
+import { executeQueryExampleFirstCall, executeQueryExampleParse, executeQueryExampleSecondCall, executeQueryExampleThirdCall } from './executeQueryExample.js';
 
 const query = TEST_QUERY;
 const queryParameter = TEST_QUERY_PARAMETER;
@@ -20,10 +20,13 @@ describe('getOffers', () => {
   });
   it('should return the offers with a status of 200', async () => {
     // ARRANGE
-    executeQueryMock.mockImplementationOnce(() => Promise.resolve(executeQueryExample));
+    executeQueryMock
+      .mockImplementationOnce(() => Promise.resolve(executeQueryExampleFirstCall))
+      .mockImplementationOnce(() => Promise.resolve(executeQueryExampleSecondCall))
+      .mockImplementationOnce(() => Promise.resolve(executeQueryExampleThirdCall));
     // ACT
     const res = await request(app)
-      .get('/offers');
+      .get('/offers/1');
     // ARRANGE
     expect(res.status).toBe(200);
     expect(res.body).toEqual(executeQueryExampleParse);
@@ -37,7 +40,7 @@ describe('getOffers', () => {
     });
     // ACT
     const res = await request(app)
-      .get('/offers');
+      .get('/offers/1');
     // ASSERT
     expect(res.status).toBe(500);
     expect(res.body).toMatchObject({

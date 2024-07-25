@@ -25,8 +25,11 @@ export class OfferService {
     }
   };
 
-  getOffers = async () => {
-    const offers = await this.offerRepository.getOffers();
+  getOffers = async (page) => {
+    if (!page) {
+      page = 1;
+    }
+    const offers = await this.offerRepository.getOffers(page);
     return offers;
   };
 

@@ -8,7 +8,7 @@ export const createOfferRouter = () => {
   const offerRouter = Router();
 
   offerRouter.post('/', authenticateJWT, offerController.create);
-  offerRouter.get('/', offerController.getOffers);
+  offerRouter.get('/:page', offerController.getOffers);
   offerRouter.delete('/:id?', offerController.deleteOffer);
   return offerRouter;
 };

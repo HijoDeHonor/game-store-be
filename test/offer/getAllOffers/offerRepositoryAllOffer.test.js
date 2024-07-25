@@ -2,8 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FAILED_GETTING, OFFERS } from '../../../src/utils/textConstants.js';
 import { OfferRepository } from '../../../src/offer/offerRepository.js';
 import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
-import { executeQueryExample, executeQueryExampleParse } from './executeQueryExample.js';
-describe('InventoryRepositoryGetUserItems', () => {
+import { executeQueryExampleFirstCall, executeQueryExampleParse, executeQueryExampleSecondCall, executeQueryExampleThirdCall } from './executeQueryExample.js';
+
+describe('OfferRepositoryGetOffers', () => {
   let mockConnection;
   let offerRepository;
 
@@ -17,29 +18,30 @@ describe('InventoryRepositoryGetUserItems', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
-  it('should be able to return the full array of the offers', async () => {
-    // arrange
+
+  it('should return the full array of offers', async () => {
+    // Arrange
     mockConnection.executeQuery
-      .mockImplementationOnce(() => Promise.resolve(executeQueryExample));
+      .mockImplementationOnce(() => Promise.resolve(executeQueryExampleFirstCall))
+      .mockImplementationOnce(() => Promise.resolve(executeQueryExampleSecondCall))
+      .mockImplementationOnce(() => Promise.resolve(executeQueryExampleThirdCall));
 
-    // act
-    const res = await offerRepository.getOffers();
+    // Act
+    const res = await offerRepository.getOffers('1');
 
-    // assert
+    // Assert
     expect(res).toEqual(executeQueryExampleParse);
-    expect(mockConnection.executeQuery).toBeCalledTimes(1);
+    expect(mockConnection.executeQuery).toBeCalledTimes(3);
   });
 
-  it('should reject with an error if the connection return a error', async () => {
-    // arrange
-    mockConnection.executeQuery
-      .mockImplementationOnce(() => {
-        throw new SQLError(FAILED_GETTING);
-      });
+  it('should reject with an error if the connection returns an error', async () => {
+    // Arrange
+    mockConnection.executeQuery.mockImplementationOnce(() => {
+      throw new SQLError(FAILED_GETTING);
+    });
 
-    // act & assert
-
-    await expect(offerRepository.getOffers()).rejects.toMatchObject({
+    // Act & Assert
+    await expect(offerRepository.getOffers('1')).rejects.toMatchObject({
       message: `${FAILED_GETTING}: ${OFFERS}`
     });
   });
