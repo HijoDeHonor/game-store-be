@@ -9,7 +9,7 @@ export class OfferService {
 
   getOffers = async (page) => {
     if (!page) {
-      throw new InvalidDataError(INVALID_DATA, OFFERS);
+      page = 1;
     }
     const offers = await this.offerRepository.getOffers(page);
     return offers;

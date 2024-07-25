@@ -11,7 +11,7 @@ export class OfferRepository {
 
   async getOffers (page) {
     try {
-      const limit = parseInt(process.env.PAGESIZE);
+      const limit = 10;
       const actualPage = (parseInt(page) - 1) * limit;
       const offerIdList = await this.mySQLConnection.executeQuery(
         `SELECT
