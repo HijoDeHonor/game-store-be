@@ -112,18 +112,24 @@ export class InventoryRepository {
     }
   }
 
-  async getQuantity (userName, name) {
+  async getQuantity (userName, [list]) {
     try {
-      const rows = await this.mySQLConnection.executeQuery(
+      const quantitys = list.map(item =>
+        this.mySQLConnection.executeQuery(
         `
-        SELECT Quantity FROM user_items
+        SELECT 
+        Quantity,
+        item_name
+        FROM user_items
         WHERE user_userName = ? AND item_Name = ?
-        `, [userName, name]
+        `, [userName, item.name]
+        )
       );
-      if (rows.length === 0) {
+      await Promise.all(quantitys);
+      if (quantitys[0].length === 0) {
         return 0;
       }
-      return rows[0].Quantity;
+      return quantitys[0];
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING, INVENTORY, error);

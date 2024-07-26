@@ -1,12 +1,13 @@
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 import { FailedToDeleteError } from '../errors/ErrorTypes/failedToDeleteError.js';
 import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
-import { FAILED_CREATE, FAILED_DELETING, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS } from '../utils/textConstants.js';
+import { FAILED_CREATE, FAILED_DELETING, HAS_NOT_ENOUGH, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS } from '../utils/textConstants.js';
 
 export class OfferService {
-  constructor ({ offerRepository, inventoryRepository }) {
+  constructor ({ offerRepository, inventoryRepository, userRepository }) {
     this.offerRepository = offerRepository;
     this.inventoryRepository = inventoryRepository;
+    this.userRepository = userRepository;
   }
 
   create = async (id, userName, offer, request) => {
@@ -29,7 +30,36 @@ export class OfferService {
     if ((!id) || (!userNameTrader)) {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
-    await this.offerRepository.complete(id, userNameTrader);
+
+    const offer = this.offerRepository.getOffer(id);
+
+    const offerItems = offer.offerItems;
+    const requestItems = offer.requestItems;
+
+    await this.userRepository.getBy(userNameTrader);
+
+    const hasThisQuantity = await this.inventoryRepository.getQuantity(userNameTrader, [requestItems]);
+
+    const compareItems = (requestItems, userHas) => {
+      for (const reqItem of requestItems) {
+        const userItem = userHas.find(item => item.item_name === reqItem.item_name);
+
+        if (!userItem || userItem.Quantity <= reqItem.quantity) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    const hasEnoght = compareItems(requestItems, hasThisQuantity);
+
+    if (!hasEnoght) {
+      throw new InvalidDataError(HAS_NOT_ENOUGH, OFFERS);
+    }
+
+    const isComplete = this.offerRepository.trasnferItemsAndcompleteOffer(userNameTrader, offer.userNamePoster, requestItems, offerItems);
+
+    return isComplete;
   };
 
   getOffers = async () => {

@@ -30,13 +30,13 @@ export const FAILED_ADDING_ERROR = 'FailedAddingError';
 export const FAILED_COMPLETING_ERROR = 'FailedCompletingError';
 export const FAILED_CREATING_ERROR = 'FailedCreatingError';
 export const FAILED_GETTING_ERROR = 'FailedGettingError';
+export const FAILED_DELETE_ERROR = 'FailedToDeleteError';
 export const INVALID_DATA_ERROR = 'InvalidDataError';
 export const INVALID_LOGIN_ERROR = 'InvalidLoginError';
 
 // TEST constants
 export const TEST_AUTHENTICATION_SUCCESS = 'You are authenticated';
 export const TEST_DONT_EXIST_USERNAME = 'ThisUserDontExist';
-export const FAILED_DELETE_ERROR = 'FailedToDeleteError';
 
 // TEST
 export const TEST_ITEM = 'Sword';
@@ -65,6 +65,7 @@ export const TEST_USER_SERVICE_METHOD_CREATE = 'UserService.create';
 export const HAS_BEEN_DELETE = 'Has been delete successfully.';
 export const HAS_NOT_BEEN_DELETE = 'Has not been delete.';
 export const HAS_BEEN_COMPLETE = 'Has been complete successfully';
+export const HAS_NOT_ENOUGH = 'Dont have enough';
 // VALUES
 export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const SECRET_TOKEN_KEY = 'iam-a-super-secure-secret-word';

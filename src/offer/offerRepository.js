@@ -1,9 +1,7 @@
 import moment from 'moment';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { DATE_FORMAT, FAILED_COMPLETING, FAILED_CREATE, FAILED_GETTING, INVALID_DATA, OFFERS, SQLERROR } from '../utils/textConstants.js';
+import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
-import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
-import { FailedCompletingError } from '../errors/ErrorTypes/failedCompleting.js';
 
 export class OfferRepository {
   constructor ({ mySQLConnection, inventoryRepository }) {
@@ -76,6 +74,7 @@ export class OfferRepository {
      LEFT JOIN items ir ON ri.item_Name = ir.Name
    WHERE 
      o.deleted = FALSE
+     AND o.completed =false
    ORDER BY 
      o.id, offer_item_name, request_item_name;`
       );
@@ -130,6 +129,88 @@ export class OfferRepository {
     }
   }
 
+  async getOffer (id) {
+    try {
+      const [offer] = await this.mySQLConnection.execute(
+        `SELECT
+      BIN_TO_UUID(o.id) AS offer_id,
+      o.userNamePoster
+    FROM offers o
+    WHERE o.id = UUID_TO_BIN(?)
+      AND o.deleted = FALSE
+      AND o.completed = FALSE`, [id]
+      );
+
+      if (!offer) {
+        throw new FailedGettingError('Failed to get offer', OFFERS);
+      }
+
+      const offerItems = await this.mySQLConnection.executeQuery(
+        `SELECT
+        oi.item_Name AS offerItemName,
+        oi.Quantity AS offerQuantity,
+        BIN_TO_UUID(o.id) AS offer_id
+     FROM
+        offers o
+       LEFT JOIN offer_items oi ON o.id = oi.offer_id
+       LEFT JOIN items i ON oi.item_Name = i.Name
+     WHERE
+        o.id = UUID_TO_BIN(?)`, [id]
+      );
+
+      if (offerItems.length === 0) {
+        throw new FailedGettingError('Failed to get offer items', OFFERS);
+      }
+
+      const requestItems = await this.mySQLConnection.executeQuery(
+        `SELECT
+        ri.item_Name AS requestItemName,
+        ri.Quantity AS requestQuantity,
+        BIN_TO_UUID(o.id) AS offer_id
+     FROM
+        offers o
+       LEFT JOIN request_items ri ON o.id = ri.offer_id
+       LEFT JOIN items ir ON ri.item_Name = ir.Name
+     WHERE
+        o.id = UUID_TO_BIN(?)`, [id]
+      );
+
+      if (requestItems.length === 0) {
+        throw new FailedGettingError('Failed to get request items', OFFERS);
+      }
+
+      const offerMap = {
+        [offer.offer_id]: {
+          id: offer.offer_id,
+          userNamePoster: offer.userNamePoster,
+          offerItems: [],
+          requestItems: []
+        }
+      };
+
+      offerItems.forEach(item => {
+        if (offerMap[item.offer_id]) {
+          offerMap[item.offer_id].offerItems.push({ item_name: item.offerItemName, Quantity: item.offerQuantity });
+        }
+      });
+
+      requestItems.forEach(item => {
+        if (offerMap[item.offer_id]) {
+          offerMap[item.offer_id].requestItems.push({ item_name: item.requestItemName, Quantity: item.requestQuantity });
+        }
+      });
+
+      const result = Object.values(offerMap);
+
+      return result;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
+      }
+      throw error;
+    }
+  }
+
   async deleteOffer (id, connection) {
     try {
       const date = moment().format(DATE_FORMAT);
@@ -149,58 +230,35 @@ export class OfferRepository {
     }
   }
 
-  async complete (id, userNameTrader) {
+  // hacer set complete
+
+  async complete (id, userNameTrader, connection) {
     try {
-      const activeOfferUserNameResult = await this.mySQLConnection.executeQuery(
+      const date = moment().format(DATE_FORMAT);
+      await this.mySQLConnection.executeQuery(
         `
-        SELECT userNamePoster
-        FROM offers
+        UPDATE offers
+        SET completed = TRUE,
+            completedDate = ?,
+            completedBy = ?
         WHERE id = UUID_TO_BIN(?)
-        AND deleted = false;
-        `, [id]
+        `,
+        [date, userNameTrader, id],
+        connection
       );
-
-      if (activeOfferUserNameResult.length === 0) {
-        throw new InvalidDataError(INVALID_DATA, OFFERS);
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
       }
+      throw error;
+    }
+  }
 
-      const activeOfferUserName = activeOfferUserNameResult[0].userNamePoster;
-
-      const offerToCompleteTransaction = await this.mySQLConnection.executeTransaction(async (connection) => {
-        const offerItems = await this.mySQLConnection.executeQuery(
-          `SELECT
-            oi.item_Name AS offerItemName,
-            oi.Quantity AS offerQuantity
-           FROM
-            offers o
-           LEFT JOIN offer_items oi ON o.id = oi.offer_id
-           LEFT JOIN items i ON oi.item_Name = i.Name
-           WHERE
-            o.id = UUID_TO_BIN(?)`, [id], connection
-        );
-
-        if (offerItems.length === 0) {
-          throw FailedGettingError(FailedGettingError, OFFERS);
-        }
-        console.log(offerItems);
-        const requestItems = await this.mySQLConnection.executeQuery(
-          `SELECT
-            ri.item_Name AS requestItemName,
-            ri.Quantity AS requestQuantity
-           FROM
-            offers o
-           LEFT JOIN request_items ri ON o.id = ri.offer_id
-           LEFT JOIN items ir ON ri.item_Name = ir.Name
-           WHERE
-            o.id = UUID_TO_BIN(?)`, [id], connection
-        );
-        console.log(requestItems);
-        if (requestItems.length === 0) {
-          throw FailedGettingError(FailedGettingError, OFFERS);
-        }
-
+  async trasnferItemsAndcompleteOffer (id, userNameTrader, userNamePoster, requestItems, offerItems) {
+    try {
+      await this.mySQLConnection.executeTransaction(async (connection) => {
         const addItemsToTheUserPoster = requestItems.map(item =>
-          this.inventoryRepository.addItemToUser(activeOfferUserName, item.requestItemName, item.requestQuantity, connection)
+          this.inventoryRepository.addItemToUser(userNamePoster, item.requestItemName, item.requestQuantity, connection)
         );
         await Promise.all(addItemsToTheUserPoster);
 
@@ -212,18 +270,13 @@ export class OfferRepository {
         const removeItemTotheUserTrader = requestItems.map(item =>
           this.inventoryRepository.removeItemToUser(userNameTrader, item.requestItemName, item.requestQuantity, connection)
         );
-
         await Promise.all(removeItemTotheUserTrader);
 
-        const isDelete = await this.deleteOffer(id, connection);
+        await this.complete(id, userNameTrader, connection);
 
-        if (isDelete) {
-          return { success: true };
-        }
+        return { success: true };
       });
-      if (!offerToCompleteTransaction.success) {
-        throw new FailedCompletingError(FAILED_COMPLETING, OFFERS);
-      }
+      return { success: true };
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
