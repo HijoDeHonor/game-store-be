@@ -11,6 +11,7 @@ export const createInventoryRouter = () => {
   // Users
   inventoryRouter.get('/users/:userName?', authenticateJWT, inventoryController.getAllUserItems);
   inventoryRouter.post('/users/:userName?', authenticateJWT, inventoryController.addItem);
+  inventoryRouter.delete('/user/:userName?', authenticateJWT, inventoryController.removeItem);
 
   return inventoryRouter;
 };

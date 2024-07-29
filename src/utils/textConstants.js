@@ -67,4 +67,5 @@ export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const SECRET_TOKEN_KEY = 'iam-a-super-secure-secret-word';
 // Messagges
 export const ADD_SUCCESS = 'Added successfully.';
+export const REMOVE_SUCCESS = 'Removed successfully.';
 export const CREATE_SUCCESS = 'Created successfully';

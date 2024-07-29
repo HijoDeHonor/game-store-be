@@ -45,14 +45,14 @@ export class InventoryRepository {
     };
   };
 
-  async addItemToUser (userName, item, quantity) {
+  async addItemToUser (userName, itemName, quantity) {
     try {
       const rows = await this.mySQLConnection.executeQuery(
       ` INSERT INTO user_items (user_userName, item_Name, Quantity)
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE Quantity = Quantity + VALUES(Quantity);
       `,
-      [userName, item, quantity]
+      [userName, itemName, quantity]
       );
       if (rows.length === 0) {
         return false;
@@ -66,44 +66,17 @@ export class InventoryRepository {
     }
   }
 
-  async removeItemToUser (userName, item, quantity, connection) {
+  async removeItemToUser (userName, itemName, quantity, connection) {
     try {
-      const rows = await this.mySQLConnection.executeQuery(
-        `
-      SELECT Quantity
-      FROM user_items
-      WHERE user_userName = ?
-      AND item_Name = ?;
-      `, [userName, item], connection
-      );
-      if (rows.length === 0) {
-        return false;
-      }
-      const actualQuantity = rows[0].Quantity;
-      if (actualQuantity < quantity) {
-        return false;
-      }
-      if (actualQuantity === quantity) {
-        const res = await this.mySQLConnection.executeQuery(
-          `
-        DELETE FROM user_items
-        WHERE user_userName = ?
-        AND item_Name = ?;
-        `, [userName, item], connection
-        );
-        return res.affectedRows > 0;
-      } else {
-        const updatedQuantity = actualQuantity - quantity;
-        const res = await this.mySQLConnection.executeQuery(
+      const res = await this.mySQLConnection.executeQuery(
         `
         UPDATE user_items
         SET Quantity = ?
         WHERE user_userName = ?
         AND item_Name = ?;
-        `, [updatedQuantity, userName, item], connection
-        );
-        return res.affectedRows > 0;
-      }
+        `, [quantity, userName, itemName], connection
+      );
+      return res.affectedRows > 0;
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedToDeleteError(FAILED_DELETING, INVENTORY, error);
@@ -112,13 +85,31 @@ export class InventoryRepository {
     }
   }
 
-  async getQuantity (userName, name) {
+  async deleteItem (userName, itemName, connection) {
+    try {
+      await this.mySQLConnection.executeQuery(
+       `
+       DELETE FROM user_items
+       WHERE user_userName = ?
+       AND item_Name = ?;
+       `
+       , [userName, itemName], connection
+      );
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedToDeleteError(FAILED_DELETING, INVENTORY, error);
+      }
+      throw error;
+    }
+  }
+
+  async getQuantity (userName, itemName) {
     try {
       const rows = await this.mySQLConnection.executeQuery(
         `
         SELECT Quantity FROM user_items
         WHERE user_userName = ? AND item_Name = ?
-        `, [userName, name]
+        `, [userName, itemName]
       );
       if (rows.length === 0) {
         return 0;
