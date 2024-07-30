@@ -28,8 +28,7 @@ describe('InventoryControllerAddItem', () => {
     // ACT
     const res = await supertest(app).post(`/inventory/users/${TEST_USERNAME}`)
       .send({
-        userName: TEST_USERNAME,
-        item: TEST_ITEM,
+        itemName: TEST_ITEM,
         quantity: 5
       });
     // ASSERT
@@ -42,8 +41,7 @@ describe('InventoryControllerAddItem', () => {
     // ACT
     const res = await supertest(app).post(`/inventory/users/${TEST_USERNAME}`)
       .send({
-        userName: TEST_USERNAME,
-        item: TEST_ITEM
+        itemName: TEST_ITEM
       });
     // ASSERT
     expect(res.status).toBe(500);

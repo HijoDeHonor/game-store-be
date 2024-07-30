@@ -43,7 +43,7 @@ describe('UserControllerRemove', () => {
     // assert
     expect(res.status).toBe(200);
     expect(res.body).toBe(REMOVE_SUCCESS);
-    expect(mockInventoryRepository.removeItemToUser).toHaveBeenCalledWith(TEST_USERNAME, TEST_ITEM, 5);
+    expect(mockInventoryRepository.removeItemToUser).toHaveBeenCalledWith(TEST_USERNAME, TEST_ITEM, 1);
   });
 
   it('should delete an item if the user has the same amount', async () => {
@@ -60,6 +60,6 @@ describe('UserControllerRemove', () => {
     // assert
     expect(res.status).toBe(200);
     expect(res.body).toBe(REMOVE_SUCCESS);
-    expect(mockInventoryRepository.removeItemToUser).toHaveBeenCalledWith(TEST_USERNAME, TEST_ITEM, 5);
+    expect(mockInventoryRepository.deleteItem).toHaveBeenCalledWith(TEST_USERNAME, TEST_ITEM);
   });
 });
