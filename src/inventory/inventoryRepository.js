@@ -66,7 +66,7 @@ export class InventoryRepository {
     }
   }
 
-  async removeItemToUser (userName, itemName, quantity, connection) {
+  async removeItemFromUser (userName, itemName, quantity, connection) {
     try {
       const res = await this.mySQLConnection.executeQuery(
         `
@@ -103,21 +103,32 @@ export class InventoryRepository {
     }
   }
 
-  async getQuantity (userName, itemName) {
+  async getQuantitys (userName, list) {
     try {
-      const rows = await this.mySQLConnection.executeQuery(
-        `
-        SELECT Quantity FROM user_items
+      const quantityPromises = list.map(item =>
+        this.mySQLConnection.executeQuery(
+          `
+        SELECT 
+        Quantity,
+        item_name
+        FROM user_items
         WHERE user_userName = ? AND item_Name = ?
-        `, [userName, itemName]
+        `, [userName, item.name]
+        )
       );
-      if (rows.length === 0) {
-        return 0;
-      }
-      return rows[0].Quantity;
+      const quantityResults = await Promise.all(quantityPromises);
+
+      const quantities = quantityResults.map((result, index) => {
+        if (result.length === 0) {
+          return { itemName: list[index].name, quantity: 0 };
+        }
+        return { itemName: list[index].name, quantity: result[0].Quantity };
+      });
+
+      return quantities;
     } catch (error) {
-      if (error.name === SQLERROR) {
-        throw new FailedGettingError(FAILED_GETTING, INVENTORY, error);
+      if (error.name === 'SQLERROR') {
+        throw new FailedGettingError('FAILED_GETTING', 'INVENTORY', error);
       }
       throw error;
     }

@@ -14,7 +14,7 @@ export class OfferService {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
     for (const item of offer) {
-      const actualQuantity = await this.inventoryRepository.getQuantity(userName, item.name);
+      const actualQuantity = await this.inventoryRepository.getQuantitys(userName, item.name);
       if (item.Quantity > actualQuantity) {
         throw new InvalidDataError(INSUFFICIENT_QUANTITY, OFFERS);
       }

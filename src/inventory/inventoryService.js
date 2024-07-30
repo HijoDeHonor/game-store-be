@@ -31,26 +31,37 @@ export class InventoryService {
     }
   };
 
-  removeItemToUser = async (userName, itemName, quantity) => {
-    if (!userName || !itemName || !quantity) {
+  removeItemsFromUser = async (userName, list) => {
+    if (!userName || !Array.isArray(list) || list.length === 0) {
       throw new InvalidDataError(INVALID_DATA, INVENTORY);
     }
-    // verify the user existence.
+
+    // Verify the user's existence.
     await this.userRepository.getBy(userName);
 
-    // recover the item quantity.
-    const userHas = await this.inventoryRepository.getQuantity(userName, itemName, quantity);
+    // Retrieve the quantities of the items.
+    const quantities = await this.inventoryRepository.getQuantitys(userName, list);
 
-    // if the user does not have enough throws an error.
-    if (userHas < quantity) {
-      throw new InvalidDataError(FAILED_DELETING, INVENTORY);
-    } else if (userHas === quantity) {
-      // if the user has the same quantity proceed to delete the item from his inventory.
-      await this.inventoryRepository.deleteItem(userName, itemName);
-      return;
+    // Process each item in the list.
+    for (const item of list) {
+      const { itemName, quantity } = item;
+      if (!itemName || !quantity) {
+        throw new InvalidDataError(INVALID_DATA, INVENTORY);
+      }
+
+      // Find the quantity of the item that the user has.
+      const userHasItem = quantities.find(q => q.itemName === itemName);
+
+      if (!userHasItem || userHasItem.quantity < quantity) {
+        throw new InvalidDataError(FAILED_DELETING, INVENTORY);
+      } else if (userHasItem.quantity === quantity) {
+        // If the user has the same quantity, delete the item from their inventory.
+        await this.inventoryRepository.deleteItem(userName, itemName);
+      } else {
+        // If the user has more, just remove the quantity given by the parameters.
+        const updateQuantity = userHasItem.quantity - quantity;
+        await this.inventoryRepository.removeItemFromUser(userName, itemName, updateQuantity);
+      }
     }
-    // if the user has more, just remove the quantity given by params.
-    const updateQuantity = userHas - quantity;
-    await this.inventoryRepository.removeItemToUser(userName, itemName, updateQuantity);
   };
 }

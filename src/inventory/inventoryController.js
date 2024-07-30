@@ -7,7 +7,7 @@ export class InventoryController {
     this.getAllUserItems = this.getAllUserItems.bind(this);
     this.getServerItems = this.getServerItems.bind(this);
     this.addItem = this.addItem.bind(this);
-    this.removeItem = this.removeItem.bind(this);
+    this.removeItems = this.removeItems.bind(this);
   }
 
   getAllUserItems = tryCatch(async (req, res) => {
@@ -29,10 +29,12 @@ export class InventoryController {
     res.status(200).json(ADD_SUCCESS);
   });
 
-  removeItem = tryCatch(async (req, res) => {
+  removeItems = tryCatch(async (req, res) => {
     const username = req.params.userName;
-    const { itemName, quantity } = req.body;
-    await this.inventoryService.removeItemToUser(username, itemName, quantity);
+    const list = req.body;
+
+    await this.inventoryService.removeItemsFromUser(username, list);
+
     res.status(200).json(REMOVE_SUCCESS);
   });
 }

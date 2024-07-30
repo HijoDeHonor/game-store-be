@@ -24,7 +24,7 @@ describe('userRepositoryRemoveItem', () => {
       affectedRows: 1
     });
     // act
-    const res = await inventoryRepository.removeItemToUser(userName, itemName, quantity);
+    const res = await inventoryRepository.removeItemFromUser(userName, itemName, quantity);
     // arrange
     expect(res).toBe(true);
   });
@@ -35,7 +35,7 @@ describe('userRepositoryRemoveItem', () => {
       affectedRows: 0
     });
     // act
-    const res = await inventoryRepository.removeItemToUser(userName, itemName, quantity);
+    const res = await inventoryRepository.removeItemFromUser(userName, itemName, quantity);
     // assert
     expect(res).toBe(false);
   });

@@ -23,7 +23,7 @@ describe('OfferServiceCreate', () => {
   let inventoryRepositoryMock;
   let offerService;
   beforeEach(() => {
-    inventoryRepositoryMock = vi.spyOn(InventoryRepository.prototype, 'getQuantity');
+    inventoryRepositoryMock = vi.spyOn(InventoryRepository.prototype, 'getQuantitys');
     offerRepositoryMock = vi.spyOn(OfferRepository.prototype, 'create');
     offerService = new OfferService({
       offerRepository: new OfferRepository({ mySQLConnection: {} }),
