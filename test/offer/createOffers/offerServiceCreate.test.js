@@ -18,12 +18,14 @@ const request = [{
 
 const id = TEST_ID_OFFER;
 
-describe('OfferServiceCreate', () => {
+describe('OfferServiceCreate', () =>
+{
   let offerRepositoryMock;
   let inventoryRepositoryMock;
   let offerService;
-  beforeEach(() => {
-    inventoryRepositoryMock = vi.spyOn(InventoryRepository.prototype, 'getQuantitys');
+  beforeEach(() =>
+  {
+    inventoryRepositoryMock = vi.spyOn(InventoryRepository.prototype, 'getQuantities');
     offerRepositoryMock = vi.spyOn(OfferRepository.prototype, 'create');
     offerService = new OfferService({
       offerRepository: new OfferRepository({ mySQLConnection: {} }),
@@ -31,11 +33,13 @@ describe('OfferServiceCreate', () => {
     });
   });
 
-  afterEach(() => {
+  afterEach(() =>
+  {
     vi.restoreAllMocks();
   });
 
-  it('should throw InvalidDataError when one of the parameters is missing', async () => {
+  it('should throw InvalidDataError when one of the parameters is missing', async () =>
+  {
     // act & assert
     await expect(offerService.create(id, TEST_USERNAME, offer, '')).rejects.toThrow(InvalidDataError);
     await expect(offerService.create(id, '', offer, request)).rejects.toThrow(InvalidDataError);
@@ -43,23 +47,27 @@ describe('OfferServiceCreate', () => {
     await expect(offerService.create('', TEST_USERNAME, offer, request)).rejects.toThrow(InvalidDataError);
   });
 
-  it('should reject with FailedCreatingError when the call to inventoryRepository fails', async () => {
+  it('should reject with FailedCreatingError when the call to inventoryRepository fails', async () =>
+  {
     // arrange
-    inventoryRepositoryMock.mockImplementationOnce(() => {
+    inventoryRepositoryMock.mockImplementationOnce(() =>
+    {
       throw new FailedCreatingError(FAILED_GETTING, INVENTORY);
     });
     // act & assert
     await expect(offerService.create(TEST_USERNAME, offer, request, id)).rejects.toThrow(FailedCreatingError);
   });
 
-  it('should throw InvalidDataError if Quantity isn’t enough to cover the offer', async () => {
+  it('should throw InvalidDataError if Quantity isn’t enough to cover the offer', async () =>
+  {
     // arrange
     inventoryRepositoryMock.mockResolvedValueOnce(4);
     // act & assert
     await expect(offerService.create(id, TEST_USERNAME, offer, request)).rejects.toThrow(InvalidDataError);
   });
 
-  it('should create offer successfully when all conditions are met', async () => {
+  it('should create offer successfully when all conditions are met', async () =>
+  {
     // arrange
     inventoryRepositoryMock.mockResolvedValueOnce(10);
     offerRepositoryMock.mockResolvedValueOnce(true);
@@ -71,7 +79,8 @@ describe('OfferServiceCreate', () => {
     expect(offerRepositoryMock).toHaveBeenCalledWith(id, TEST_USERNAME, offer, request);
   });
 
-  it('should throw FailedCreatingError if offer creation fails', async () => {
+  it('should throw FailedCreatingError if offer creation fails', async () =>
+  {
     // arrange
     inventoryRepositoryMock.mockResolvedValueOnce(10);
     offerRepositoryMock.mockResolvedValueOnce(false);

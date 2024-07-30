@@ -6,7 +6,7 @@ import { REMOVE_SUCCESS, TEST_ITEM, TEST_USERNAME } from '../../../../src/utils/
 import supertest from 'supertest';
 const mockInventoryRepository = {
   removeItemFromUser: vi.fn(),
-  getQuantitys: vi.fn(),
+  getQuantities: vi.fn(),
   deleteItem: vi.fn()
 };
 const mockUserRepository = {
@@ -16,12 +16,14 @@ const mockUserRepository = {
 const app = express();
 app.use(express.json());
 
-describe('UserControllerRemove', () => {
+describe('UserControllerRemove', () =>
+{
   let controller;
 
-  beforeEach(() => {
+  beforeEach(() =>
+  {
     mockUserRepository.getBy.mockReset();
-    mockInventoryRepository.getQuantitys.mockReset();
+    mockInventoryRepository.getQuantities.mockReset();
     mockInventoryRepository.removeItemFromUser.mockReset();
     const inventoryService = new InventoryService({ inventoryRepository: mockInventoryRepository, userRepository: mockUserRepository });
     controller = new InventoryController({ inventoryService });
@@ -29,10 +31,11 @@ describe('UserControllerRemove', () => {
     app.delete('/inventory/users/:userName/', controller.removeItems);
   });
 
-  it('should remove an item if the user has more than the quantity to remove', async () => {
+  it('should remove an item if the user has more than the quantity to remove', async () =>
+  {
     // arrange
     mockUserRepository.getBy.mockResolvedValue(true);
-    mockInventoryRepository.getQuantitys.mockResolvedValue([
+    mockInventoryRepository.getQuantities.mockResolvedValue([
       { itemName: TEST_ITEM, quantity: 6 }
     ]);
     mockInventoryRepository.removeItemFromUser.mockResolvedValue(true);
@@ -48,10 +51,11 @@ describe('UserControllerRemove', () => {
     expect(mockInventoryRepository.removeItemFromUser).toHaveBeenCalledWith(TEST_USERNAME, TEST_ITEM, 1);
   });
 
-  it('should delete an item if the user has the same amount', async () => {
+  it('should delete an item if the user has the same amount', async () =>
+  {
     // arrange
     mockUserRepository.getBy.mockResolvedValue(true);
-    mockInventoryRepository.getQuantitys.mockResolvedValue([
+    mockInventoryRepository.getQuantities.mockResolvedValue([
       { itemName: TEST_ITEM, quantity: 5 }
     ]);
     mockInventoryRepository.deleteItem.mockResolvedValue(true);

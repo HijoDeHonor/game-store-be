@@ -6,7 +6,8 @@ import { DOES_NOT_EXIST, TEST_ITEM, TEST_USERNAME, USERS } from '../../../../src
 import { InvalidDataError } from '../../../../src/errors/errorTypes/invalidDataError.js';
 import { DoesNotExistError } from '../../../../src/errors/errorTypes/doesNotExistError.js';
 
-describe('inventoryServiceRemoveItem', () => {
+describe('inventoryServiceRemoveItem', () =>
+{
   const userName = TEST_USERNAME;
   const itemName = TEST_ITEM;
   const quantity = 5;
@@ -20,19 +21,22 @@ describe('inventoryServiceRemoveItem', () => {
   let inventoryRepositoryGetQuantity;
   let userRepositoryGetBy;
   let inventoryService;
-  beforeEach(() => {
+  beforeEach(() =>
+  {
     userRepositoryGetBy = vi.spyOn(UserRepository.prototype, 'getBy');
-    inventoryRepositoryGetQuantity = vi.spyOn(InventoryRepository.prototype, 'getQuantitys');
+    inventoryRepositoryGetQuantity = vi.spyOn(InventoryRepository.prototype, 'getQuantities');
     inventoryRepositoryRemoveItemMock = vi.spyOn(InventoryRepository.prototype, 'removeItemFromUser');
     inventoryRepositoryDeleteItem = vi.spyOn(InventoryRepository.prototype, 'deleteItem');
     inventoryService = new InventoryService({ inventoryRepository: new InventoryRepository({ mySQLConnection: {} }), userRepository: new UserRepository({ mySQLConnection: {} }) });
   });
 
-  afterEach(() => {
+  afterEach(() =>
+  {
     vi.resetAllMocks();
   });
 
-  it('should throw an error if any of the two parameters is missing', async () => {
+  it('should throw an error if any of the two parameters is missing', async () =>
+  {
     // arrange
 
     // act & assert
@@ -41,9 +45,11 @@ describe('inventoryServiceRemoveItem', () => {
     await expect(inventoryService.removeItemsFromUser('', list)).rejects.toThrow(InvalidDataError);
   });
 
-  it('should throw an error if the user dont exist', async () => {
+  it('should throw an error if the user dont exist', async () =>
+  {
     // arrange
-    userRepositoryGetBy.mockImplementationOnce(() => {
+    userRepositoryGetBy.mockImplementationOnce(() =>
+    {
       throw new DoesNotExistError(DOES_NOT_EXIST, USERS);
     });
 
@@ -51,7 +57,8 @@ describe('inventoryServiceRemoveItem', () => {
     await expect(inventoryService.removeItemsFromUser(userName, list)).rejects.toThrow();
   });
 
-  it('should throw an error if the user has less items', async () => {
+  it('should throw an error if the user has less items', async () =>
+  {
     // arrange
     userRepositoryGetBy.mockImplementationOnce(() => Promise.resolve(true));
     inventoryRepositoryGetQuantity.mockImplementationOnce(() => Promise.resolve([
@@ -62,7 +69,8 @@ describe('inventoryServiceRemoveItem', () => {
     await expect(inventoryService.removeItemsFromUser(userName, list)).rejects.toThrow(InvalidDataError);
   });
 
-  it('should be able to remove the quantity if the user has more', async () => {
+  it('should be able to remove the quantity if the user has more', async () =>
+  {
     // arrange
     userRepositoryGetBy.mockImplementationOnce(() => Promise.resolve(true));
     inventoryRepositoryGetQuantity.mockImplementationOnce(() => Promise.resolve([
@@ -77,7 +85,8 @@ describe('inventoryServiceRemoveItem', () => {
     expect(inventoryRepositoryRemoveItemMock).toHaveBeenCalledWith(userName, itemName, updateQuantity);
   });
 
-  it('should be able to remove the item if has the same amount', async () => {
+  it('should be able to remove the item if has the same amount', async () =>
+  {
     // arrange
     userRepositoryGetBy.mockImplementationOnce(() => Promise.resolve(true));
     inventoryRepositoryGetQuantity.mockImplementationOnce(() => Promise.resolve([

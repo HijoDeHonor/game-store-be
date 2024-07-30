@@ -30,7 +30,7 @@ export class InventoryRepository {
   async getServerItems () {
     try {
       const rows = await this.mySQLConnection.executeQuery(
-      `SELECT * FROM items
+        `SELECT * FROM items
        ORDER BY Name ASC;`
       );
       if (!rows || rows.length === 0) {
@@ -48,11 +48,11 @@ export class InventoryRepository {
   async addItemToUser (userName, itemName, quantity) {
     try {
       const rows = await this.mySQLConnection.executeQuery(
-      ` INSERT INTO user_items (user_userName, item_Name, Quantity)
+        ` INSERT INTO user_items (user_userName, item_Name, Quantity)
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE Quantity = Quantity + VALUES(Quantity);
       `,
-      [userName, itemName, quantity]
+        [userName, itemName, quantity]
       );
       if (rows.length === 0) {
         return false;
@@ -88,12 +88,12 @@ export class InventoryRepository {
   async deleteItem (userName, itemName, connection) {
     try {
       await this.mySQLConnection.executeQuery(
-       `
+        `
        DELETE FROM user_items
        WHERE user_userName = ?
        AND item_Name = ?;
        `
-       , [userName, itemName], connection
+        , [userName, itemName], connection
       );
     } catch (error) {
       if (error.name === SQLERROR) {
@@ -103,27 +103,25 @@ export class InventoryRepository {
     }
   }
 
-  async getQuantitys (userName, list) {
+  async getQuantities (userName, itemList) {
     try {
-      const quantityPromises = list.map(item =>
-        this.mySQLConnection.executeQuery(
-          `
-        SELECT 
-        Quantity,
-        item_name
-        FROM user_items
-        WHERE user_userName = ? AND item_Name = ?
-        `, [userName, item.name]
-        )
+      const itemNames = itemList.map(item => item.itemName);
+      const placeholders = itemNames.map(() => '?').join(', ');
+      const result = await this.mySQLConnection.executeQuery(
+      `
+       SELECT 
+        item_Name AS itemName,
+        Quantity
+       FROM user_items
+       WHERE user_userName = ? AND item_Name IN (${placeholders})
+      `, [userName, ...itemNames]
       );
-      const quantityResults = await Promise.all(quantityPromises);
+      const resultMap = new Map(result.map(result => [result.itemName, result.Quantity]));
 
-      const quantities = quantityResults.map((result, index) => {
-        if (result.length === 0) {
-          return { itemName: list[index].name, quantity: 0 };
-        }
-        return { itemName: list[index].name, quantity: result[0].Quantity };
-      });
+      const quantities = itemList.map(item => ({
+        itemNane: item.itemName,
+        quantity: resultMap.get(item.itemName)
+      }));
 
       return quantities;
     } catch (error) {

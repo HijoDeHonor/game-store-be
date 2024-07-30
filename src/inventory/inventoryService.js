@@ -1,6 +1,7 @@
+import { DoesNotExistError } from '../errors/ErrorTypes/doesNotExistError.js';
 import { FailedAddingError } from '../errors/ErrorTypes/failedAddingError.js';
 import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
-import { INVALID_DATA, INVENTORY, FAILED_ADDING, FAILED_DELETING } from '../utils/textConstants.js';
+import { INVALID_DATA, INVENTORY, FAILED_ADDING, FAILED_DELETING, DOES_NOT_EXIST, USERS } from '../utils/textConstants.js';
 
 export class InventoryService {
   constructor ({ inventoryRepository, userRepository }) {
@@ -37,10 +38,12 @@ export class InventoryService {
     }
 
     // Verify the user's existence.
-    await this.userRepository.getBy(userName);
-
+    const exist = await this.userRepository.exist(userName);
+    if (!exist) {
+      throw new DoesNotExistError(DOES_NOT_EXIST, USERS);
+    }
     // Retrieve the quantities of the items.
-    const quantities = await this.inventoryRepository.getQuantitys(userName, list);
+    const quantities = await this.inventoryRepository.getQuantities(userName, list);
 
     // Process each item in the list.
     for (const item of list) {
