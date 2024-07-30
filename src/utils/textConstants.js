@@ -65,6 +65,7 @@ export const HAS_NOT_BEEN_DELETE = 'Has not been delete.';
 // VALUES
 export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const SECRET_TOKEN_KEY = 'iam-a-super-secure-secret-word';
+export const UUID_TO_BIN = 'UUID_TO_BIN(?)';
 // Messagges
 export const ADD_SUCCESS = 'Added successfully.';
 export const REMOVE_SUCCESS = 'Removed successfully.';

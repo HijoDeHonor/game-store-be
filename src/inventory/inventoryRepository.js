@@ -125,8 +125,8 @@ export class InventoryRepository {
 
       return quantities;
     } catch (error) {
-      if (error.name === 'SQLERROR') {
-        throw new FailedGettingError('FAILED_GETTING', 'INVENTORY', error);
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING, INVENTORY, error);
       }
       throw error;
     }

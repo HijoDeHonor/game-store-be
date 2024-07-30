@@ -1,7 +1,7 @@
 import moment from 'moment';
 import dotenv from 'dotenv';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
+import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, OFFERS, SQLERROR, UUID_TO_BIN } from '../utils/textConstants.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 dotenv.config();
 
@@ -78,7 +78,7 @@ export class OfferRepository {
       if (ids.length === 0) {
         return [];
       }
-      const idsForQuery = ids.map(() => 'UUID_TO_BIN(?)').join(', ');
+      const idsForQuery = ids.map(() => UUID_TO_BIN).join(', ');
 
       const offerItemsQuery = `
       SELECT 

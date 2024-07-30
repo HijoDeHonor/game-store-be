@@ -45,6 +45,7 @@ export class InventoryService {
     // Retrieve the quantities of the items.
     const quantities = await this.inventoryRepository.getQuantities(userName, list);
 
+    const pendingTasks = [];
     // Process each item in the list.
     for (const item of list) {
       const { itemName, quantity } = item;
@@ -59,12 +60,19 @@ export class InventoryService {
         throw new InvalidDataError(FAILED_DELETING, INVENTORY);
       } else if (userHasItem.quantity === quantity) {
         // If the user has the same quantity, delete the item from their inventory.
-        await this.inventoryRepository.deleteItem(userName, itemName);
+        pendingTasks.push(() =>
+          this.inventoryRepository.deleteItem(userName, itemName)
+        );
       } else {
         // If the user has more, just remove the quantity given by the parameters.
         const updateQuantity = userHasItem.quantity - quantity;
-        await this.inventoryRepository.removeItemFromUser(userName, itemName, updateQuantity);
+        pendingTasks.push(() =>
+          this.inventoryRepository.removeItemFromUser(userName, itemName, updateQuantity)
+        );
       }
+    }
+    for (const task of pendingTasks) {
+      await task();
     }
   };
 }
