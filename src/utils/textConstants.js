@@ -2,6 +2,7 @@
 export const INVENTORY = 'Inventory';
 export const OFFERS = 'Offers';
 export const USERS = 'Users';
+export const USER_TRADER = 'User Trader';
 
 // ERROR MESSAGES:
 export const ALREADY_EXIST = 'Already exist';
@@ -30,6 +31,7 @@ export const FAILED_ADDING_ERROR = 'FailedAddingError';
 export const FAILED_COMPLETING_ERROR = 'FailedCompletingError';
 export const FAILED_CREATING_ERROR = 'FailedCreatingError';
 export const FAILED_GETTING_ERROR = 'FailedGettingError';
+export const FAILED_GETTING_OFFER = 'Failed to get offer';
 export const FAILED_DELETE_ERROR = 'FailedToDeleteError';
 export const INVALID_DATA_ERROR = 'InvalidDataError';
 export const INVALID_LOGIN_ERROR = 'InvalidLoginError';

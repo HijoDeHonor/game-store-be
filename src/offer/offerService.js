@@ -1,7 +1,8 @@
+import { DoesNotExistError } from '../errors/errorTypes/doesNotExistError.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 import { FailedToDeleteError } from '../errors/ErrorTypes/failedToDeleteError.js';
 import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
-import { FAILED_CREATE, FAILED_DELETING, HAS_NOT_ENOUGH, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS } from '../utils/textConstants.js';
+import { DOES_NOT_EXIST, FAILED_CREATE, FAILED_DELETING, HAS_NOT_ENOUGH, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS, USER_TRADER } from '../utils/textConstants.js';
 
 export class OfferService {
   constructor ({ offerRepository, inventoryRepository, userRepository }) {
@@ -33,33 +34,34 @@ export class OfferService {
 
     const offer = this.offerRepository.getOffer(id);
 
-    const offerItems = offer.offerItems;
-    const requestItems = offer.requestItems;
+    const { offerItems, requestItems } = offer;
 
-    await this.userRepository.getBy(userNameTrader);
+    const exist = await this.userRepository.exist(userNameTrader);
 
-    const hasThisQuantity = await this.inventoryRepository.getQuantity(userNameTrader, [requestItems]);
+    if (!exist) {
+      throw new DoesNotExistError(DOES_NOT_EXIST, USER_TRADER);
+    }
 
-    const compareItems = (requestItems, userHas) => {
-      for (const reqItem of requestItems) {
-        const userItem = userHas.find(item => item.item_name === reqItem.item_name);
+    const userTraderItems = await this.inventoryRepository.getQuantity(userNameTrader, [requestItems]);
 
-        if (!userItem || userItem.Quantity <= reqItem.quantity) {
-          return false;
-        }
-      }
-      return true;
-    };
-
-    const hasEnoght = compareItems(requestItems, hasThisQuantity);
+    const hasEnoght = this.compareItems(userTraderItems, requestItems);
 
     if (!hasEnoght) {
       throw new InvalidDataError(HAS_NOT_ENOUGH, OFFERS);
     }
 
-    const isComplete = this.offerRepository.trasnferItemsAndcompleteOffer(userNameTrader, offer.userNamePoster, requestItems, offerItems);
+    return this.offerRepository.trasnferItemsAndcompleteOffer(userNameTrader, offer.userNamePoster, requestItems, offerItems);
+  };
 
-    return isComplete;
+  compareItems = (itemsHas, itemsMust) => {
+    for (const reqItem of itemsMust) {
+      const userItem = itemsHas.find(item => item.item_name === reqItem.item_name);
+
+      if (!userItem || userItem.Quantity <= reqItem.quantity) {
+        return false;
+      }
+    }
+    return true;
   };
 
   getOffers = async () => {

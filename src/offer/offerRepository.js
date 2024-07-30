@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
+import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, FAILED_GETTING_OFFER, OFFERS, SQLERROR } from '../utils/textConstants.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 
 export class OfferRepository {
@@ -142,7 +142,7 @@ export class OfferRepository {
       );
 
       if (!offer) {
-        throw new FailedGettingError('Failed to get offer', OFFERS);
+        throw new FailedGettingError(FAILED_GETTING_OFFER, OFFERS);
       }
 
       const offerItems = await this.mySQLConnection.executeQuery(
@@ -159,7 +159,7 @@ export class OfferRepository {
       );
 
       if (offerItems.length === 0) {
-        throw new FailedGettingError('Failed to get offer items', OFFERS);
+        throw new FailedGettingError(FAILED_GETTING_OFFER, OFFERS);
       }
 
       const requestItems = await this.mySQLConnection.executeQuery(
@@ -176,7 +176,7 @@ export class OfferRepository {
       );
 
       if (requestItems.length === 0) {
-        throw new FailedGettingError('Failed to get request items', OFFERS);
+        throw new FailedGettingError(FAILED_GETTING_OFFER, OFFERS);
       }
 
       const offerMap = {
@@ -230,8 +230,6 @@ export class OfferRepository {
     }
   }
 
-  // hacer set complete
-
   async complete (id, userNameTrader, connection) {
     try {
       const date = moment().format(DATE_FORMAT);
@@ -273,10 +271,7 @@ export class OfferRepository {
         await Promise.all(removeItemTotheUserTrader);
 
         await this.complete(id, userNameTrader, connection);
-
-        return { success: true };
       });
-      return { success: true };
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
