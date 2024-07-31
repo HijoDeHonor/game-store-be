@@ -10,19 +10,17 @@ const mockInventoryRepository = {
   deleteItem: vi.fn()
 };
 const mockUserRepository = {
-  getBy: vi.fn()
+  exist: vi.fn()
 };
 
 const app = express();
 app.use(express.json());
 
-describe('UserControllerRemove', () =>
-{
+describe('UserControllerRemove', () => {
   let controller;
 
-  beforeEach(() =>
-  {
-    mockUserRepository.getBy.mockReset();
+  beforeEach(() => {
+    mockUserRepository.exist.mockReset();
     mockInventoryRepository.getQuantities.mockReset();
     mockInventoryRepository.removeItemFromUser.mockReset();
     const inventoryService = new InventoryService({ inventoryRepository: mockInventoryRepository, userRepository: mockUserRepository });
@@ -31,10 +29,9 @@ describe('UserControllerRemove', () =>
     app.delete('/inventory/users/:userName/', controller.removeItems);
   });
 
-  it('should remove an item if the user has more than the quantity to remove', async () =>
-  {
+  it('should remove an item if the user has more than the quantity to remove', async () => {
     // arrange
-    mockUserRepository.getBy.mockResolvedValue(true);
+    mockUserRepository.exist.mockResolvedValue(true);
     mockInventoryRepository.getQuantities.mockResolvedValue([
       { itemName: TEST_ITEM, quantity: 6 }
     ]);
@@ -51,10 +48,9 @@ describe('UserControllerRemove', () =>
     expect(mockInventoryRepository.removeItemFromUser).toHaveBeenCalledWith(TEST_USERNAME, TEST_ITEM, 1);
   });
 
-  it('should delete an item if the user has the same amount', async () =>
-  {
+  it('should delete an item if the user has the same amount', async () => {
     // arrange
-    mockUserRepository.getBy.mockResolvedValue(true);
+    mockUserRepository.exist.mockResolvedValue(true);
     mockInventoryRepository.getQuantities.mockResolvedValue([
       { itemName: TEST_ITEM, quantity: 5 }
     ]);
