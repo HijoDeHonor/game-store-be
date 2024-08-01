@@ -74,7 +74,7 @@ export class OfferRepository {
      LEFT JOIN items ir ON ri.item_Name = ir.Name
    WHERE 
      o.deleted = FALSE
-     AND o.completed =false
+     AND o.completed = false
    ORDER BY 
      o.id, offer_item_name, request_item_name;`
       );

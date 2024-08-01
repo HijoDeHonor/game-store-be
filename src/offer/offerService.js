@@ -16,7 +16,7 @@ export class OfferService {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
     for (const item of offer) {
-      const actualQuantity = await this.inventoryRepository.getQuantity(userName, item.name);
+      const actualQuantity = await this.inventoryRepository.getQuantities(userName, item.name);
       if (item.Quantity > actualQuantity) {
         throw new InvalidDataError(INSUFFICIENT_QUANTITY, OFFERS);
       }
@@ -36,13 +36,11 @@ export class OfferService {
 
     const { offerItems, requestItems } = offer;
 
-    const exist = await this.userRepository.exist(userNameTrader);
-
-    if (!exist) {
+    if (!await this.userRepository.exist(userNameTrader)) {
       throw new DoesNotExistError(DOES_NOT_EXIST, USER_TRADER);
     }
 
-    const userTraderItems = await this.inventoryRepository.getQuantity(userNameTrader, [requestItems]);
+    const userTraderItems = await this.inventoryRepository.getQuantities(userNameTrader, [requestItems]);
 
     const hasEnoght = this.compareItems(userTraderItems, requestItems);
 

@@ -112,7 +112,7 @@ export class InventoryRepository {
     }
   }
 
-  async getQuantity (userName, [list]) {
+  async getQuantities (userName, [list]) {
     try {
       const quantitys = list.map(item =>
         this.mySQLConnection.executeQuery(

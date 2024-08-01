@@ -56,15 +56,13 @@ export class UserRepository {
 
   async exist (property) {
     try {
-      const exist = await this.getBy(property);
-      if (!exist) {
-        return false;
-      }
-      return true;
+      const rows = await this.getBy(property);
+      return rows.length > 0;
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING_ERROR, USERS, error);
       }
+      return false;
     }
   }
 }
