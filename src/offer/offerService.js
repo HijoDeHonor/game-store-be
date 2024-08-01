@@ -13,16 +13,28 @@ export class OfferService {
     if ((!id) || (!userName) || (offer.length === 0) || (request.length === 0)) {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
-    for (const item of offer) {
-      const actualQuantity = await this.inventoryRepository.getQuantities(userName, item.name);
-      if (item.Quantity > actualQuantity) {
-        throw new InvalidDataError(INSUFFICIENT_QUANTITY, OFFERS);
-      }
+    const actualQuantity = await this.inventoryRepository.getQuantities(userName, offer);
+
+    const hasEnoght = this.compareItems(actualQuantity, offer);
+
+    if (!hasEnoght) {
+      throw new InvalidDataError(INSUFFICIENT_QUANTITY, OFFERS);
     }
     const isCreated = await this.offerRepository.create(id, userName, offer, request);
     if (isCreated !== true) {
       throw new FailedCreatingError(FAILED_CREATE, OFFERS);
     }
+  };
+
+  compareItems = (itemsHas, itemsMust) => {
+    for (const reqItem of itemsMust) {
+      const userItem = itemsHas.find(item => item.item_name === reqItem.item_name);
+
+      if (!userItem || userItem.Quantity <= reqItem.quantity) {
+        return false;
+      }
+    }
+    return true;
   };
 
   getOffers = async (page) => {
