@@ -1,12 +1,14 @@
+import { DoesNotExistError } from '../errors/errorTypes/doesNotExistError.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 import { FailedToDeleteError } from '../errors/ErrorTypes/failedToDeleteError.js';
 import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
-import { FAILED_CREATE, FAILED_DELETING, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS } from '../utils/textConstants.js';
+import { DOES_NOT_EXIST, FAILED_CREATE, FAILED_DELETING, HAS_NOT_ENOUGH, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS, USER_TRADER } from '../utils/textConstants.js';
 
 export class OfferService {
-  constructor ({ offerRepository, inventoryRepository }) {
+  constructor ({ offerRepository, inventoryRepository, userRepository }) {
     this.offerRepository = offerRepository;
     this.inventoryRepository = inventoryRepository;
+    this.userRepository = userRepository;
   }
 
   create = async (id, userName, offer, request) => {
@@ -14,7 +16,7 @@ export class OfferService {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
     for (const item of offer) {
-      const actualQuantity = await this.inventoryRepository.getQuantity(userName, item.name);
+      const actualQuantity = await this.inventoryRepository.getQuantities(userName, item.name);
       if (item.Quantity > actualQuantity) {
         throw new InvalidDataError(INSUFFICIENT_QUANTITY, OFFERS);
       }
@@ -25,11 +27,43 @@ export class OfferService {
     }
   };
 
-  getOffers = async (page) => {
-    if (!page) {
-      page = 1;
+  complete = async (id, userNameTrader) => {
+    if ((!id) || (!userNameTrader)) {
+      throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
-    const offers = await this.offerRepository.getOffers(page);
+
+    const offer = this.offerRepository.getOffer(id);
+
+    const { offerItems, requestItems } = offer;
+
+    if (!await this.userRepository.exist(userNameTrader)) {
+      throw new DoesNotExistError(DOES_NOT_EXIST, USER_TRADER);
+    }
+
+    const userTraderItems = await this.inventoryRepository.getQuantities(userNameTrader, [requestItems]);
+
+    const hasEnoght = this.compareItems(userTraderItems, requestItems);
+
+    if (!hasEnoght) {
+      throw new InvalidDataError(HAS_NOT_ENOUGH, OFFERS);
+    }
+
+    return this.offerRepository.trasnferItemsAndcompleteOffer(userNameTrader, offer.userNamePoster, requestItems, offerItems);
+  };
+
+  compareItems = (itemsHas, itemsMust) => {
+    for (const reqItem of itemsMust) {
+      const userItem = itemsHas.find(item => item.item_name === reqItem.item_name);
+
+      if (!userItem || userItem.Quantity <= reqItem.quantity) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  getOffers = async () => {
+    const offers = await this.offerRepository.getOffers();
     return offers;
   };
 

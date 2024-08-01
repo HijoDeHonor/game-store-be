@@ -53,4 +53,16 @@ export class UserRepository {
       throw error;
     }
   }
+
+  async exist (property) {
+    try {
+      const rows = await this.getBy(property);
+      return rows.length > 0;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING_ERROR, USERS, error);
+      }
+      return false;
+    }
+  }
 }

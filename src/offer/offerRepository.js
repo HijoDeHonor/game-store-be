@@ -1,7 +1,7 @@
 import moment from 'moment';
 import dotenv from 'dotenv';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, OFFERS, SQLERROR } from '../utils/textConstants.js';
+import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, FAILED_GETTING_OFFER, OFFERS, SQLERROR } from '../utils/textConstants.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 dotenv.config();
 
@@ -150,17 +150,149 @@ export class OfferRepository {
     }
   }
 
-  async deleteOffer (id) {
+  async getOffer (id) {
+    try {
+      const [offer] = await this.mySQLConnection.execute(
+        `SELECT
+      BIN_TO_UUID(o.id) AS offer_id,
+      o.userNamePoster
+    FROM offers o
+    WHERE o.id = UUID_TO_BIN(?)
+      AND o.deleted = FALSE
+      AND o.completed = FALSE`, [id]
+      );
+
+      if (!offer) {
+        throw new FailedGettingError(FAILED_GETTING_OFFER, OFFERS);
+      }
+
+      const offerItems = await this.mySQLConnection.executeQuery(
+        `SELECT
+        oi.item_Name AS offerItemName,
+        oi.Quantity AS offerQuantity,
+        BIN_TO_UUID(o.id) AS offer_id
+     FROM
+        offers o
+       LEFT JOIN offer_items oi ON o.id = oi.offer_id
+       LEFT JOIN items i ON oi.item_Name = i.Name
+     WHERE
+        o.id = UUID_TO_BIN(?)`, [id]
+      );
+
+      if (offerItems.length === 0) {
+        throw new FailedGettingError(FAILED_GETTING_OFFER, OFFERS);
+      }
+
+      const requestItems = await this.mySQLConnection.executeQuery(
+        `SELECT
+        ri.item_Name AS requestItemName,
+        ri.Quantity AS requestQuantity,
+        BIN_TO_UUID(o.id) AS offer_id
+     FROM
+        offers o
+       LEFT JOIN request_items ri ON o.id = ri.offer_id
+       LEFT JOIN items ir ON ri.item_Name = ir.Name
+     WHERE
+        o.id = UUID_TO_BIN(?)`, [id]
+      );
+
+      if (requestItems.length === 0) {
+        throw new FailedGettingError(FAILED_GETTING_OFFER, OFFERS);
+      }
+
+      const offerMap = {
+        [offer.offer_id]: {
+          id: offer.offer_id,
+          userNamePoster: offer.userNamePoster,
+          offerItems: [],
+          requestItems: []
+        }
+      };
+
+      offerItems.forEach(item => {
+        if (offerMap[item.offer_id]) {
+          offerMap[item.offer_id].offerItems.push({ item_name: item.offerItemName, Quantity: item.offerQuantity });
+        }
+      });
+
+      requestItems.forEach(item => {
+        if (offerMap[item.offer_id]) {
+          offerMap[item.offer_id].requestItems.push({ item_name: item.requestItemName, Quantity: item.requestQuantity });
+        }
+      });
+
+      const result = Object.values(offerMap);
+
+      return result;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
+      }
+      throw error;
+    }
+  }
+
+  async deleteOffer (id, connection) {
     try {
       const date = moment().format(DATE_FORMAT);
       const rows = await this.mySQLConnection.executeQuery(
         `UPDATE offers
-         SET deleted = TRUE
+         SET deleted = TRUE,
              deleteDate = ?
-         WHERE id = UUID_TO_BIN(?);`
-        , [date, id]
+         WHERE id = UUID_TO_BIN(?)`,
+        [date, id], connection
       );
       return rows.affectedRows > 0;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
+      }
+      throw error;
+    }
+  }
+
+  async complete (id, userNameTrader, connection) {
+    try {
+      const date = moment().format(DATE_FORMAT);
+      await this.mySQLConnection.executeQuery(
+        `
+        UPDATE offers
+        SET completed = TRUE,
+            completedDate = ?,
+            completedBy = ?
+        WHERE id = UUID_TO_BIN(?)
+        `,
+        [date, userNameTrader, id],
+        connection
+      );
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
+      }
+      throw error;
+    }
+  }
+
+  async trasnferItemsAndcompleteOffer (id, userNameTrader, userNamePoster, requestItems, offerItems) {
+    try {
+      await this.mySQLConnection.executeTransaction(async (connection) => {
+        const addItemsToTheUserPoster = requestItems.map(item =>
+          this.inventoryRepository.addItemToUser(userNamePoster, item.requestItemName, item.requestQuantity, connection)
+        );
+        await Promise.all(addItemsToTheUserPoster);
+
+        const addItemsToTheUserTrader = offerItems.map(item =>
+          this.inventoryRepository.addItemToUser(userNameTrader, item.offerItemName, item.offerQuantity, connection)
+        );
+        await Promise.all(addItemsToTheUserTrader);
+
+        const removeItemTotheUserTrader = requestItems.map(item =>
+          this.inventoryRepository.removeItemToUser(userNameTrader, item.requestItemName, item.requestQuantity, connection)
+        );
+        await Promise.all(removeItemTotheUserTrader);
+
+        await this.complete(id, userNameTrader, connection);
+      });
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
