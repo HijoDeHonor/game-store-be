@@ -22,7 +22,7 @@ export const PASSWORD_REQUIRED = 'Password is required';
 export const SQLERROR = 'SQLError';
 export const USERNAME_CONTAIN_SPACE = 'User Name must not contain spaces';
 export const USERNAME_REQUIRED = 'User Name is required';
-export const INSUFFICIENT_QUANTITY = 'User dont have enough items';
+export const INSUFFICIENT_QUANTITY = 'User dont have enought items';
 
 // ERROR TYPES:
 export const ALREADY_EXIST_ERROR = 'AlreadyExistError';
@@ -71,6 +71,8 @@ export const HAS_NOT_ENOUGH = 'Dont have enough';
 // VALUES
 export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const SECRET_TOKEN_KEY = 'iam-a-super-secure-secret-word';
+export const UUID_TO_BIN = 'UUID_TO_BIN(?)';
 // Messagges
 export const ADD_SUCCESS = 'Added successfully.';
+export const REMOVE_SUCCESS = 'Removed successfully.';
 export const CREATE_SUCCESS = 'Created successfully';

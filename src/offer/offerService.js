@@ -15,11 +15,12 @@ export class OfferService {
     if ((!id) || (!userName) || (offer.length === 0) || (request.length === 0)) {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
-    for (const item of offer) {
-      const actualQuantity = await this.inventoryRepository.getQuantities(userName, item.name);
-      if (item.Quantity > actualQuantity) {
-        throw new InvalidDataError(INSUFFICIENT_QUANTITY, OFFERS);
-      }
+    const actualQuantity = await this.inventoryRepository.getQuantities(userName, offer);
+
+    const hasEnoght = this.compareItems(actualQuantity, offer);
+
+    if (!hasEnoght) {
+      throw new InvalidDataError(INSUFFICIENT_QUANTITY, OFFERS);
     }
     const isCreated = await this.offerRepository.create(id, userName, offer, request);
     if (isCreated !== true) {
@@ -31,7 +32,6 @@ export class OfferService {
     if ((!id) || (!userNameTrader)) {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
-
     const offer = this.offerRepository.getOffer(id);
 
     const { offerItems, requestItems } = offer;

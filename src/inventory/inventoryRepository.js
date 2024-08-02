@@ -30,7 +30,7 @@ export class InventoryRepository {
   async getServerItems () {
     try {
       const rows = await this.mySQLConnection.executeQuery(
-      `SELECT * FROM items
+        `SELECT * FROM items
        ORDER BY Name ASC;`
       );
       if (!rows || rows.length === 0) {
@@ -48,11 +48,11 @@ export class InventoryRepository {
   async addItemToUser (userName, item, quantity, connection) {
     try {
       const rows = await this.mySQLConnection.executeQuery(
-      ` INSERT INTO user_items (user_userName, item_Name, Quantity)
+        ` INSERT INTO user_items (user_userName, item_Name, Quantity)
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE Quantity = Quantity + VALUES(Quantity);
       `,
-      [userName, item, quantity], connection
+        [userName, item, quantity], connection
       );
       if (rows.length === 0) {
         return false;
@@ -66,44 +66,17 @@ export class InventoryRepository {
     }
   }
 
-  async removeItemToUser (userName, item, quantity, connection) {
+  async removeItemFromUser (userName, itemName, quantity, connection) {
     try {
-      const rows = await this.mySQLConnection.executeQuery(
-        `
-      SELECT Quantity
-      FROM user_items
-      WHERE user_userName = ?
-      AND item_Name = ?;
-      `, [userName, item], connection
-      );
-      if (rows.length === 0) {
-        return false;
-      }
-      const actualQuantity = rows[0].Quantity;
-      if (actualQuantity < quantity) {
-        return false;
-      }
-      if (actualQuantity === quantity) {
-        const res = await this.mySQLConnection.executeQuery(
-          `
-        DELETE FROM user_items
-        WHERE user_userName = ?
-        AND item_Name = ?;
-        `, [userName, item], connection
-        );
-        return res.affectedRows > 0;
-      } else {
-        const updatedQuantity = actualQuantity - quantity;
-        const res = await this.mySQLConnection.executeQuery(
+      const res = await this.mySQLConnection.executeQuery(
         `
         UPDATE user_items
         SET Quantity = ?
         WHERE user_userName = ?
         AND item_Name = ?;
-        `, [updatedQuantity, userName, item], connection
-        );
-        return res.affectedRows > 0;
-      }
+        `, [quantity, userName, itemName], connection
+      );
+      return res.affectedRows > 0;
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedToDeleteError(FAILED_DELETING, INVENTORY, error);
@@ -112,24 +85,45 @@ export class InventoryRepository {
     }
   }
 
-  async getQuantities (userName, [list]) {
+  async deleteItem (userName, itemName, connection) {
     try {
-      const quantitys = list.map(item =>
-        this.mySQLConnection.executeQuery(
+      await this.mySQLConnection.executeQuery(
         `
-        SELECT 
-        Quantity,
-        item_name
-        FROM user_items
-        WHERE user_userName = ? AND item_Name = ?
-        `, [userName, item.name]
-        )
+       DELETE FROM user_items
+       WHERE user_userName = ?
+       AND item_Name = ?;
+       `
+        , [userName, itemName], connection
       );
-      await Promise.all(quantitys);
-      if (quantitys[0].length === 0) {
-        return 0;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedToDeleteError(FAILED_DELETING, INVENTORY, error);
       }
-      return quantitys[0];
+      throw error;
+    }
+  }
+
+  async getQuantities (userName, itemList) {
+    try {
+      const itemNames = itemList.map(item => item.itemName);
+      const placeholders = itemNames.map(() => '?').join(', ');
+      const result = await this.mySQLConnection.executeQuery(
+      `
+       SELECT 
+        item_Name AS itemName,
+        Quantity
+       FROM user_items
+       WHERE user_userName = ? AND item_Name IN (${placeholders})
+      `, [userName, ...itemNames]
+      );
+      const resultMap = new Map(result.map(result => [result.itemName, result.Quantity]));
+
+      const quantities = itemList.map(item => ({
+        itemNane: item.itemName,
+        quantity: resultMap.get(item.itemName)
+      }));
+
+      return quantities;
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING, INVENTORY, error);
