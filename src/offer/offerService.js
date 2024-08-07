@@ -32,7 +32,7 @@ export class OfferService {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
 
-    const offer = this.offerRepository.getOffer(id);
+    const offer = await this.offerRepository.getOffer(id);
 
     const { offerItems, requestItems } = offer;
 
@@ -51,16 +51,21 @@ export class OfferService {
     return this.offerRepository.trasnferItemsAndcompleteOffer(userNameTrader, offer.userNamePoster, requestItems, offerItems);
   };
 
-  compareItems = (itemsHas, itemsMust) => {
-    for (const reqItem of itemsMust) {
-      const userItem = itemsHas.find(item => item.item_name === reqItem.item_name);
+  compareItems (itemsHas, itemsMust) {
+    if (!Array.isArray(itemsMust)) {
+      throw new InvalidDataError('asdaosd', OFFERS);
+    }
 
-      if (!userItem || userItem.Quantity <= reqItem.quantity) {
+    for (const reqItem of itemsMust) {
+      const userItem = itemsHas.find(item => item.name === reqItem.name);
+
+      if (!userItem || userItem.Quantity < reqItem.Quantity) {
         return false;
       }
     }
     return true;
-  };
+  }
+
 
   getOffers = async () => {
     const offers = await this.offerRepository.getOffers();
