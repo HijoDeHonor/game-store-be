@@ -1,14 +1,16 @@
 import { DoesNotExistError } from '../errors/errorTypes/doesNotExistError.js';
+import { FailedCompletingError } from '../errors/errorTypes/failedCompleting.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
-import { FailedToDeleteError } from '../errors/ErrorTypes/failedToDeleteError.js';
+import { FailedToDeleteError } from '../errors/errorTypes/failedToDeleteError.js';
 import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
-import { DOES_NOT_EXIST, FAILED_CREATE, FAILED_DELETING, HAS_NOT_ENOUGH, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS, USER_TRADER } from '../utils/textConstants.js';
+import { DOES_NOT_EXIST, FAILED_COMPLETING, FAILED_CREATE, FAILED_DELETING, HAS_NOT_ENOUGH, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS, USER_TRADER } from '../utils/textConstants.js';
 
 export class OfferService {
-  constructor ({ offerRepository, inventoryRepository, userRepository }) {
+  constructor ({ offerRepository, inventoryRepository, userRepository, inventoryService }) {
     this.offerRepository = offerRepository;
     this.inventoryRepository = inventoryRepository;
     this.userRepository = userRepository;
+    this.inventoryService = inventoryService;
   }
 
   create = async (id, userName, offer, request) => {
@@ -26,6 +28,12 @@ export class OfferService {
     if (isCreated !== true) {
       throw new FailedCreatingError(FAILED_CREATE, OFFERS);
     }
+    try {
+      await this.inventoryService.removeItemsFromUser(userName, offer);
+    } catch (error) {
+      this.deleteOffer(id);
+      throw error;
+    }
   };
 
   complete = async (id, userNameTrader) => {
@@ -41,7 +49,7 @@ export class OfferService {
       throw new DoesNotExistError(DOES_NOT_EXIST, USER_TRADER);
     }
 
-    const userTraderItems = await this.inventoryRepository.getQuantities(userNameTrader, [requestItems]);
+    const userTraderItems = await this.inventoryRepository.getQuantities(userNameTrader, requestItems);
 
     const hasEnoght = this.compareItems(userTraderItems, requestItems);
 
@@ -49,7 +57,13 @@ export class OfferService {
       throw new InvalidDataError(HAS_NOT_ENOUGH, OFFERS);
     }
 
-    return this.offerRepository.trasnferItemsAndcompleteOffer(userNameTrader, offer.userNamePoster, requestItems, offerItems);
+    await this.offerRepository.trasnferItemsAndcompleteOffer(userNameTrader, offer.userNamePoster, requestItems, offerItems);
+
+    try {
+      this.inventoryService.removeItemsFromUser(userNameTrader, requestItems);
+    } catch (error) {
+      throw new FailedCompletingError(FAILED_COMPLETING, OFFERS);
+    }
   };
 
   compareItems (itemsHas, itemsMust) {
@@ -66,7 +80,6 @@ export class OfferService {
     }
     return true;
   }
-
 
   getOffers = async () => {
     const offers = await this.offerRepository.getOffers();

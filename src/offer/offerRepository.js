@@ -1,8 +1,9 @@
 import moment from 'moment';
 import dotenv from 'dotenv';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { DATE_FORMAT, FAILED_CREATE, FAILED_GETTING, FAILED_GETTING_OFFER, OFFERS, SQLERROR, UUID_TO_BIN } from '../utils/textConstants.js';
+import { DATE_FORMAT, FAILED_COMPLETING, FAILED_CREATE, FAILED_GETTING, FAILED_GETTING_OFFER, OFFERS, SQLERROR, UUID_TO_BIN } from '../utils/textConstants.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
+import { FailedCompletingError } from '../errors/errorTypes/failedCompleting.js';
 dotenv.config();
 
 export class OfferRepository {
@@ -20,15 +21,10 @@ export class OfferRepository {
           [id, userName, date]
         );
 
-        const offerDeleteItem = offer.map(item =>
-          this.inventoryRepository.removeItemToUser(userName, item.name, item.Quantity, connection)
-        );
-        await Promise.all(offerDeleteItem);
-
         const offerItemsQueries = offer.map(item =>
           this.mySQLConnection.executeQuery(
             'INSERT INTO offer_items (offer_id, item_Name, Quantity) VALUES (UUID_TO_BIN(?), ?, ?)',
-            [id, item.name, item.Quantity], connection
+            [id, item.itemName, item.quantity], connection
           )
         );
         await Promise.all(offerItemsQueries);
@@ -36,7 +32,7 @@ export class OfferRepository {
         const requestItemsQueries = request.map(item =>
           this.mySQLConnection.executeQuery(
             'INSERT INTO request_items (offer_id, item_Name, Quantity) VALUES (UUID_TO_BIN(?), ?, ?)',
-            [id, item.name, item.Quantity], connection
+            [id, item.itemName, item.quantity], connection
           )
         );
         await Promise.all(requestItemsQueries);
@@ -286,16 +282,12 @@ export class OfferRepository {
         );
         await Promise.all(addItemsToTheUserTrader);
 
-        const removeItemTotheUserTrader = requestItems.map(item =>
-          this.inventoryRepository.removeItemToUser(userNameTrader, item.requestItemName, item.requestQuantity, connection)
-        );
-        await Promise.all(removeItemTotheUserTrader);
-
         await this.complete(id, userNameTrader, connection);
       });
+      return true;
     } catch (error) {
       if (error.name === SQLERROR) {
-        throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
+        throw new FailedCompletingError(FAILED_COMPLETING, OFFERS, error);
       }
       throw error;
     }
