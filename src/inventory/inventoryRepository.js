@@ -114,12 +114,12 @@ export class InventoryRepository {
         Quantity
        FROM user_items
        WHERE user_userName = ? AND item_Name IN (${placeholders})
-      `, [userName, ...itemNames]
+      `, [userName, itemNames]
       );
       const resultMap = new Map(result.map(result => [result.itemName, result.Quantity]));
 
       const quantities = itemList.map(item => ({
-        itemNane: item.itemName,
+        itemName: item.itemName,
         quantity: resultMap.get(item.itemName)
       }));
 

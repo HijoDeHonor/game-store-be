@@ -44,7 +44,6 @@ export class InventoryService {
     }
     // Retrieve the quantities of the items.
     const quantities = await this.inventoryRepository.getQuantities(userName, list);
-
     const pendingActions = [];
     // Process each item in the list.
     for (const item of list) {

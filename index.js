@@ -1,17 +1,34 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import { errorHandler } from './src/errors/errorHandler/errorhandler.js';
 import { createUserRouter } from './src/users/userRoutes.js';
 import { createOfferRouter } from './src/offer/offerRoutes.js';
 import { createInventoryRouter } from './src/inventory/inventoryRoutes.js';
+import { CORS_NOT_ALLOWED } from './src/utils/textConstants.js';
 
 dotenv.config();
 
 export const app = express();
+app.disable('x-powered-by');
 app.use(express.json());
 app.use(cookieParser());
-app.disable('x-powered-by');
+app.use(cors({
+  origin: (origin, callback) => {
+    const ALLOWED_ORIGINS = [
+      'http://localhost:5173',
+      'https://game-store-fe.vercel.app'
+    ];
+
+    if (!origin || ALLOWED_ORIGINS.some((allowedOrigin) => origin.startsWith(allowedOrigin))) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(CORS_NOT_ALLOWED));
+  },
+  credentials: true
+}));
 
 app.use('/users', createUserRouter());
 app.use('/offers', createOfferRouter());
