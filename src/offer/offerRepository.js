@@ -60,9 +60,9 @@ export class OfferRepository {
         `SELECT
         BIN_TO_UUID(o.id) AS offerId,
         o.userNamePoster AS userName
-      FROM
+        FROM
         offers o
-      WHERE
+        WHERE
         o.deleted = FALSE
       ORDER BY
         o.createDate DESC
@@ -77,67 +77,70 @@ export class OfferRepository {
       const idsForQuery = ids.map(() => UUID_TO_BIN).join(', ');
 
       const offerItemsQuery = `
-      SELECT 
-        BIN_TO_UUID(o.id) AS offerId,
-        oi.item_Name AS offerItemName,
-        oi.Quantity AS offerQuantity,
-        i.Img AS offerItemImg
-      FROM 
-        offers o
-        LEFT JOIN offer_items oi ON o.id = oi.offer_id
-        LEFT JOIN items i ON oi.item_Name = i.Name
-      WHERE 
-        o.id IN (${idsForQuery})
+    SELECT 
+    BIN_TO_UUID(o.id) AS offerId,
+    oi.item_Name AS offerItemName,
+    oi.Quantity AS offerQuantity,
+    i.Img AS offerItemImg
+    FROM 
+    offers o
+    LEFT JOIN offer_items oi ON o.id = oi.offer_id
+    LEFT JOIN items i ON oi.item_Name = i.Name
+    WHERE 
+    o.id IN (${idsForQuery})
     `;
       const offerItems = await this.mySQLConnection.executeQuery(offerItemsQuery, ids);
-
       const requestItemsQuery = `
-      SELECT 
+    SELECT 
         BIN_TO_UUID(o.id) AS offerId,
         ri.item_Name AS requestItemName,
         ri.Quantity AS requestQuantity,
         ir.Img AS requestItemImg
-      FROM 
+        FROM 
         offers o
         LEFT JOIN request_items ri ON o.id = ri.offer_id
         LEFT JOIN items ir ON ri.item_Name = ir.Name
-      WHERE 
+        WHERE 
         o.id IN (${idsForQuery})
-    `;
+        `;
       const requestItems = await this.mySQLConnection.executeQuery(requestItemsQuery, ids);
 
       const groupedOffers = {};
 
       offerIdList.forEach(offer => {
         groupedOffers[offer.offerId] = {
-          id: offer.offerId,
-          userName: offer.userName,
-          offerItems: [],
-          requestItems: []
+          Id: offer.offerId,
+          UserNamePoster: offer.userName,
+          Offer: [],
+          Request: []
         };
       });
 
       offerItems.forEach(item => {
         if (groupedOffers[item.offerId]) {
-          groupedOffers[item.offerId].offerItems.push({
-            name: item.offerItemName,
-            quantity: item.offerQuantity,
-            img: item.offerItemImg
+          groupedOffers[item.offerId].Offer.push({
+            Name: item.offerItemName,
+            Quantity: item.offerQuantity,
+            Img: item.offerItemImg
           });
         }
       });
 
       requestItems.forEach(item => {
         if (groupedOffers[item.offerId]) {
-          groupedOffers[item.offerId].requestItems.push({
-            name: item.requestItemName,
-            quantity: item.requestQuantity,
-            img: item.requestItemImg
+          groupedOffers[item.offerId].Request.push({
+            Name: item.requestItemName,
+            Quantity: item.requestQuantity,
+            Img: item.requestItemImg
           });
         }
       });
 
-      return Object.values(groupedOffers);
+      const offerCounts = await this.mySQLConnection.executeQuery(
+        'SELECT COUNT(*) as Counts FROM offers;'
+      );
+      const counts = offerCounts[0].Counts;
+      return { totalOffers: counts, offers: Object.values(groupedOffers) };
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedGettingError(FAILED_GETTING, OFFERS, error);

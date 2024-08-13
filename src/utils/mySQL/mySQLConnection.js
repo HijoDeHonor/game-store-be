@@ -12,7 +12,6 @@ export class MySQLConnection {
       if (!conn) {
         conn = await mysql.createConnection(this.defaultConfig);
       }
-      conn = await mysql.createConnection(this.defaultConfig);
       const [rows] = await conn.query(query, parameters);
       return rows;
     } catch (error) {

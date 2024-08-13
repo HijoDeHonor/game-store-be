@@ -81,8 +81,8 @@ export class OfferService {
     return true;
   }
 
-  getOffers = async () => {
-    const offers = await this.offerRepository.getOffers();
+  getOffers = async (page) => {
+    const offers = await this.offerRepository.getOffers(page);
     return offers;
   };
 
