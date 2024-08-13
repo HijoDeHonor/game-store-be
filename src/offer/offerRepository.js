@@ -64,6 +64,8 @@ export class OfferRepository {
         offers o
         WHERE
         o.deleted = FALSE
+        AND
+        o.completed = FALSE
       ORDER BY
         o.createDate DESC
       LIMIT ? OFFSET ?`,
@@ -137,7 +139,7 @@ export class OfferRepository {
       });
 
       const offerCounts = await this.mySQLConnection.executeQuery(
-        'SELECT COUNT(*) as Counts FROM offers;'
+        'SELECT COUNT(*) as Counts FROM offers WHERE completed = false AND deleted = false;'
       );
       const counts = offerCounts[0].Counts;
       return { totalOffers: counts, offers: Object.values(groupedOffers) };
@@ -151,16 +153,15 @@ export class OfferRepository {
 
   async getOffer (id) {
     try {
-      const [offer] = await this.mySQLConnection.execute(
+      const offer = await this.mySQLConnection.executeQuery(
         `SELECT
-      BIN_TO_UUID(o.id) AS offer_id,
-      o.userNamePoster
-    FROM offers o
-    WHERE o.id = UUID_TO_BIN(?)
-      AND o.deleted = FALSE
-      AND o.completed = FALSE`, [id]
+        BIN_TO_UUID(o.id) AS offer_id,
+        o.userNamePoster
+        FROM offers o
+        WHERE o.id = UUID_TO_BIN(?)
+        AND o.deleted = FALSE
+        AND o.completed = FALSE`, [id]
       );
-
       if (!offer) {
         throw new FailedGettingError(FAILED_GETTING_OFFER, OFFERS);
       }
@@ -177,7 +178,6 @@ export class OfferRepository {
      WHERE
         o.id = UUID_TO_BIN(?)`, [id]
       );
-
       if (offerItems.length === 0) {
         throw new FailedGettingError(FAILED_GETTING_OFFER, OFFERS);
       }
@@ -194,15 +194,14 @@ export class OfferRepository {
      WHERE
         o.id = UUID_TO_BIN(?)`, [id]
       );
-
       if (requestItems.length === 0) {
         throw new FailedGettingError(FAILED_GETTING_OFFER, OFFERS);
       }
 
       const offerMap = {
-        [offer.offer_id]: {
-          id: offer.offer_id,
-          userNamePoster: offer.userNamePoster,
+        [offer[0].offer_id]: {
+          id: offer[0].offer_id,
+          userNamePoster: offer[0].userNamePoster,
           offerItems: [],
           requestItems: []
         }
@@ -210,13 +209,13 @@ export class OfferRepository {
 
       offerItems.forEach(item => {
         if (offerMap[item.offer_id]) {
-          offerMap[item.offer_id].offerItems.push({ item_name: item.offerItemName, Quantity: item.offerQuantity });
+          offerMap[item.offer_id].offerItems.push({ itemName: item.offerItemName, quantity: item.offerQuantity });
         }
       });
 
       requestItems.forEach(item => {
         if (offerMap[item.offer_id]) {
-          offerMap[item.offer_id].requestItems.push({ item_name: item.requestItemName, Quantity: item.requestQuantity });
+          offerMap[item.offer_id].requestItems.push({ itemName: item.requestItemName, quantity: item.requestQuantity });
         }
       });
 
@@ -276,12 +275,12 @@ export class OfferRepository {
     try {
       await this.mySQLConnection.executeTransaction(async (connection) => {
         const addItemsToTheUserPoster = requestItems.map(item =>
-          this.inventoryRepository.addItemToUser(userNamePoster, item.requestItemName, item.requestQuantity, connection)
+          this.inventoryRepository.addItemToUser(userNamePoster, item.itemName, item.quantity, connection)
         );
         await Promise.all(addItemsToTheUserPoster);
 
         const addItemsToTheUserTrader = offerItems.map(item =>
-          this.inventoryRepository.addItemToUser(userNameTrader, item.offerItemName, item.offerQuantity, connection)
+          this.inventoryRepository.addItemToUser(userNameTrader, item.itemName, item.quantity, connection)
         );
         await Promise.all(addItemsToTheUserTrader);
 

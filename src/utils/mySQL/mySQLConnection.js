@@ -7,16 +7,20 @@ export class MySQLConnection {
   }
 
   async executeQuery (query, parameters, connection) {
-    let conn = connection;
+    let conn;
+
     try {
-      if (!conn) {
+      if (!connection) {
         conn = await mysql.createConnection(this.defaultConfig);
+        const [rows] = await conn.query(query, parameters);
+        return rows;
       }
-      const [rows] = await conn.query(query, parameters);
+      const [rows] = await connection.query(query, parameters);
       return rows;
     } catch (error) {
       throw new SQLError(error, query, parameters);
     } finally {
+      // solo cierra la connecion creada por conn no la que recive como parametro
       if (conn) {
         await conn.end();
       }

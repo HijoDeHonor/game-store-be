@@ -42,13 +42,11 @@ export class OfferService {
     }
 
     const offer = await this.offerRepository.getOffer(id);
-
-    const { offerItems, requestItems } = offer;
+    const { offerItems, requestItems } = offer[0];
 
     if (!await this.userRepository.exist(userNameTrader)) {
       throw new DoesNotExistError(DOES_NOT_EXIST, USER_TRADER);
     }
-
     const userTraderItems = await this.inventoryRepository.getQuantities(userNameTrader, requestItems);
 
     const hasEnoght = this.compareItems(userTraderItems, requestItems);
@@ -57,7 +55,7 @@ export class OfferService {
       throw new InvalidDataError(HAS_NOT_ENOUGH, OFFERS);
     }
 
-    await this.offerRepository.trasnferItemsAndcompleteOffer(userNameTrader, offer.userNamePoster, requestItems, offerItems);
+    await this.offerRepository.trasnferItemsAndcompleteOffer(id, userNameTrader, offer[0].userNamePoster, requestItems, offerItems);
 
     try {
       this.inventoryService.removeItemsFromUser(userNameTrader, requestItems);
@@ -68,7 +66,7 @@ export class OfferService {
 
   compareItems (itemsHas, itemsMust) {
     if (!Array.isArray(itemsMust)) {
-      throw new InvalidDataError('asdaosd', OFFERS);
+      throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
 
     for (const reqItem of itemsMust) {
