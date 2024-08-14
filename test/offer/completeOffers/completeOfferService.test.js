@@ -12,7 +12,7 @@ const id = TEST_ID_OFFER;
 const userName = TEST_USERNAME;
 const offerItems = [{ name: TEST_ITEM, Quantity: 5 }];
 const requestItems = [{ name: TEST_ITEM2, Quantity: 2 }];
-const validOffer = { offerItems, requestItems };
+const validOffer = [{ offerItems, requestItems }];
 
 describe('OfferServiceComplete', () => {
   let offerRepositoryMock;

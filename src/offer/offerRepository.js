@@ -1,7 +1,7 @@
 import moment from 'moment';
 import dotenv from 'dotenv';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { DATE_FORMAT, FAILED_COMPLETING, FAILED_CREATE, FAILED_GETTING, FAILED_GETTING_OFFER, OFFERS, SQLERROR, UUID_TO_BIN } from '../utils/textConstants.js';
+import { DATE_FORMAT, FAILED_COMPLETING, FAILED_CREATE, FAILED_DELETING, FAILED_GETTING, FAILED_GETTING_OFFER, OFFERS, SQLERROR, UUID_TO_BIN } from '../utils/textConstants.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 import { FailedCompletingError } from '../errors/errorTypes/failedCompleting.js';
 dotenv.config();
@@ -243,7 +243,7 @@ export class OfferRepository {
       return rows.affectedRows > 0;
     } catch (error) {
       if (error.name === SQLERROR) {
-        throw new FailedGettingError(FAILED_GETTING, OFFERS, error);
+        throw new FailedGettingError(FAILED_DELETING, OFFERS, error);
       }
       throw error;
     }
@@ -290,6 +290,25 @@ export class OfferRepository {
     } catch (error) {
       if (error.name === SQLERROR) {
         throw new FailedCompletingError(FAILED_COMPLETING, OFFERS, error);
+      }
+      throw error;
+    }
+  }
+
+  async addItemsAndDeleteOffer (id, items, userName) {
+    try {
+      await this.mySQLConnection.executeTransaction(async (connection) => {
+        await this.deleteOffer(id);
+
+        const addItems = items.map(item =>
+          this.inventoryRepository.addItemToUser(userName, item.itemName, item.quantity)
+        );
+        await Promise.all(addItems);
+      });
+      return true;
+    } catch (error) {
+      if (error.name === SQLERROR) {
+        throw new FailedCompletingError(FAILED_DELETING, OFFERS, error);
       }
       throw error;
     }

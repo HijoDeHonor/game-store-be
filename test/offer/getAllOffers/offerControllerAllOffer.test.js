@@ -23,7 +23,8 @@ describe('getOffers', () => {
     executeQueryMock
       .mockImplementationOnce(() => Promise.resolve(executeQueryExampleFirstCall))
       .mockImplementationOnce(() => Promise.resolve(executeQueryExampleSecondCall))
-      .mockImplementationOnce(() => Promise.resolve(executeQueryExampleThirdCall));
+      .mockImplementationOnce(() => Promise.resolve(executeQueryExampleThirdCall))
+      .mockImplementationOnce(() => Promise.resolve([{ Counts: 11 }]));
     // ACT
     const res = await request(app)
       .get('/offers/1');

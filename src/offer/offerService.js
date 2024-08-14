@@ -88,8 +88,12 @@ export class OfferService {
     if (!id) {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
-    const isDelete = await this.offerRepository.deleteOffer(id);
-    if (isDelete !== true) {
+    const offer = await this.offerRepository.getOffer(id);
+    const { offerItems, userNamePoster } = offer[0];
+
+    const addItemsAndDeleteOffer = await this.offerRepository.addItemsAndDeleteOffer(id, offerItems, userNamePoster);
+    console.log(addItemsAndDeleteOffer);
+    if (addItemsAndDeleteOffer !== true) {
       throw new FailedToDeleteError(FAILED_DELETING, OFFERS);
     }
   };
