@@ -6,23 +6,23 @@ export class MySQLConnection {
     this.defaultConfig = defaultConfig;
   }
 
-  async executeQuery (query, parameters, connection) {
-    let conn;
+  async executeQuery (query, parameters, externalConnection) {
+    let localConnection;
 
     try {
-      if (!connection) {
-        conn = await mysql.createConnection(this.defaultConfig);
-        const [rows] = await conn.query(query, parameters);
+      if (!externalConnection) {
+        localConnection = await mysql.createConnection(this.defaultConfig);
+        const [rows] = await localConnection.query(query, parameters);
         return rows;
       }
-      const [rows] = await connection.query(query, parameters);
+      const [rows] = await externalConnection.query(query, parameters);
       return rows;
     } catch (error) {
       throw new SQLError(error, query, parameters);
     } finally {
-      // solo cierra la connecion creada por conn no la que recive como parametro
-      if (conn) {
-        await conn.end();
+      // solo cierra la connecion creada por localConnection no la externalConnection recive como parametro
+      if (localConnection) {
+        await localConnection.end();
       }
     }
   }

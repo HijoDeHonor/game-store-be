@@ -16,15 +16,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
   origin: (origin, callback) => {
-    const ALLOWED_ORIGINS = [
-      'http://localhost:5173',
-      'https://game-store-fe.vercel.app'
-    ];
-
-    if (!origin || ALLOWED_ORIGINS.some((allowedOrigin) => origin.startsWith(allowedOrigin))) {
+    const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+    if (!origin || allowedOrigins.some((allowedOrigin) => origin.startsWith(allowedOrigin))) {
       return callback(null, true);
     }
-
     return callback(new Error(CORS_NOT_ALLOWED));
   },
   credentials: true
@@ -39,5 +34,5 @@ const PORT = process.env.PORT ?? 0;
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`server listening on port http://localhost:${PORT}`);
+  console.log(`server listening on port ${PORT}`);
 });

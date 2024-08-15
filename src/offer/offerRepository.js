@@ -313,4 +313,37 @@ export class OfferRepository {
       throw error;
     }
   }
+
+  async removeOffer (id) {
+    try {
+      await this.mySQLConnection.executeTransaction(async (connection) => {
+        await this.mySQLConnection.executeQuery(
+          `
+          DELETE FROM offer_items
+          WHERE offer_id = UUID_TO_BIN(?);
+          `,
+          [id], connection
+        );
+
+        await this.mySQLConnection.executeQuery(
+          `
+          DELETE FROM request_items
+          WHERE offer_id = UUID_TO_BIN(?);
+          `,
+          [id], connection
+        );
+
+        await this.mySQLConnection.executeQuery(
+          `
+          DELETE FROM offers
+          WHERE id = UUID_TO_BIN(?)
+          `,
+          [id], connection
+        );
+      });
+      return true;
+    } catch (error) {
+      throw new FailedGettingError(FAILED_DELETING, OFFERS, error);
+    }
+  }
 }

@@ -31,7 +31,7 @@ export class OfferService {
     try {
       await this.inventoryService.removeItemsFromUser(userName, offer);
     } catch (error) {
-      this.deleteOffer(id);
+      this.removeOffer(id);
       throw error;
     }
   };
@@ -90,10 +90,18 @@ export class OfferService {
     }
     const offer = await this.offerRepository.getOffer(id);
     const { offerItems, userNamePoster } = offer[0];
+    const restoreItemsAndDeleteOfferResult = await this.offerRepository.addItemsAndDeleteOffer(id, offerItems, userNamePoster);
+    if (restoreItemsAndDeleteOfferResult !== true) {
+      throw new FailedToDeleteError(FAILED_DELETING, OFFERS);
+    }
+  };
 
-    const addItemsAndDeleteOffer = await this.offerRepository.addItemsAndDeleteOffer(id, offerItems, userNamePoster);
-    console.log(addItemsAndDeleteOffer);
-    if (addItemsAndDeleteOffer !== true) {
+  removeOffer = async (id) => {
+    if (!id) {
+      throw new InvalidDataError(INVALID_DATA, OFFERS);
+    };
+    const isRemoved = this.offerRepository.removeOffer(id);
+    if (!isRemoved) {
       throw new FailedToDeleteError(FAILED_DELETING, OFFERS);
     }
   };
