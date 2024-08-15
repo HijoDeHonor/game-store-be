@@ -119,7 +119,7 @@ export class InventoryRepository {
       const resultMap = new Map(result.map(result => [result.itemName, result.Quantity]));
 
       const quantities = itemList.map(item => ({
-        itemNane: item.itemName,
+        itemName: item.itemName,
         quantity: resultMap.get(item.itemName)
       }));
 

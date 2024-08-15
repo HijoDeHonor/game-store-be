@@ -1,14 +1,16 @@
 import { DoesNotExistError } from '../errors/errorTypes/doesNotExistError.js';
+import { FailedCompletingError } from '../errors/errorTypes/failedCompleting.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
 import { FailedToDeleteError } from '../errors/errorTypes/failedToDeleteError.js';
 import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
-import { DOES_NOT_EXIST, FAILED_CREATE, FAILED_DELETING, HAS_NOT_ENOUGH, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS, USER_TRADER } from '../utils/textConstants.js';
+import { DOES_NOT_EXIST, FAILED_COMPLETING, FAILED_CREATE, FAILED_DELETING, HAS_NOT_ENOUGH, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS, USER_TRADER } from '../utils/textConstants.js';
 
 export class OfferService {
-  constructor ({ offerRepository, inventoryRepository, userRepository }) {
+  constructor ({ offerRepository, inventoryRepository, userRepository, inventoryService }) {
     this.offerRepository = offerRepository;
     this.inventoryRepository = inventoryRepository;
     this.userRepository = userRepository;
+    this.inventoryService = inventoryService;
   }
 
   create = async (id, userName, offer, request) => {
@@ -26,6 +28,12 @@ export class OfferService {
     if (isCreated !== true) {
       throw new FailedCreatingError(FAILED_CREATE, OFFERS);
     }
+    try {
+      await this.inventoryService.removeItemsFromUser(userName, offer);
+    } catch (error) {
+      this.removeOffer(id);
+      throw error;
+    }
   };
 
   complete = async (id, userNameTrader) => {
@@ -34,14 +42,12 @@ export class OfferService {
     }
 
     const offer = await this.offerRepository.getOffer(id);
-
-    const { offerItems, requestItems } = offer;
+    const { offerItems, requestItems } = offer[0];
 
     if (!await this.userRepository.exist(userNameTrader)) {
       throw new DoesNotExistError(DOES_NOT_EXIST, USER_TRADER);
     }
-
-    const userTraderItems = await this.inventoryRepository.getQuantities(userNameTrader, [requestItems]);
+    const userTraderItems = await this.inventoryRepository.getQuantities(userNameTrader, requestItems);
 
     const hasEnoght = this.compareItems(userTraderItems, requestItems);
 
@@ -49,12 +55,18 @@ export class OfferService {
       throw new InvalidDataError(HAS_NOT_ENOUGH, OFFERS);
     }
 
-    return this.offerRepository.trasnferItemsAndcompleteOffer(userNameTrader, offer.userNamePoster, requestItems, offerItems);
+    await this.offerRepository.trasnferItemsAndcompleteOffer(id, userNameTrader, offer[0].userNamePoster, requestItems, offerItems);
+
+    try {
+      this.inventoryService.removeItemsFromUser(userNameTrader, requestItems);
+    } catch (error) {
+      throw new FailedCompletingError(FAILED_COMPLETING, OFFERS);
+    }
   };
 
   compareItems (itemsHas, itemsMust) {
     if (!Array.isArray(itemsMust)) {
-      throw new InvalidDataError('asdaosd', OFFERS);
+      throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
 
     for (const reqItem of itemsMust) {
@@ -67,9 +79,8 @@ export class OfferService {
     return true;
   }
 
-
-  getOffers = async () => {
-    const offers = await this.offerRepository.getOffers();
+  getOffers = async (page) => {
+    const offers = await this.offerRepository.getOffers(page);
     return offers;
   };
 
@@ -77,8 +88,20 @@ export class OfferService {
     if (!id) {
       throw new InvalidDataError(INVALID_DATA, OFFERS);
     }
-    const isDelete = await this.offerRepository.deleteOffer(id);
-    if (isDelete !== true) {
+    const offer = await this.offerRepository.getOffer(id);
+    const { offerItems, userNamePoster } = offer[0];
+    const restoreItemsAndDeleteOfferResult = await this.offerRepository.addItemsAndDeleteOffer(id, offerItems, userNamePoster);
+    if (restoreItemsAndDeleteOfferResult !== true) {
+      throw new FailedToDeleteError(FAILED_DELETING, OFFERS);
+    }
+  };
+
+  removeOffer = async (id) => {
+    if (!id) {
+      throw new InvalidDataError(INVALID_DATA, OFFERS);
+    };
+    const isRemoved = this.offerRepository.removeOffer(id);
+    if (!isRemoved) {
       throw new FailedToDeleteError(FAILED_DELETING, OFFERS);
     }
   };

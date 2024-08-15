@@ -6,12 +6,13 @@ import { InvalidDataError } from '../../../src/errors/errorTypes/invalidDataErro
 import { DoesNotExistError } from '../../../src/errors/errorTypes/doesNotExistError.js';
 import { InventoryRepository } from '../../../src/inventory/inventoryRepository.js';
 import { UserRepository } from '../../../src/users/userRepository.js';
+import { InventoryService } from '../../../src/inventory/inventoryService.js';
 
 const id = TEST_ID_OFFER;
 const userName = TEST_USERNAME;
 const offerItems = [{ name: TEST_ITEM, Quantity: 5 }];
 const requestItems = [{ name: TEST_ITEM2, Quantity: 2 }];
-const validOffer = { offerItems, requestItems };
+const validOffer = [{ offerItems, requestItems }];
 
 describe('OfferServiceComplete', () => {
   let offerRepositoryMock;
@@ -20,6 +21,7 @@ describe('OfferServiceComplete', () => {
   let offerService;
   let offerRepositoryGOMock;
   let transactionmock;
+  let inventoryServiceMock;
 
   beforeEach(() => {
     userRepositoryMock = vi.spyOn(UserRepository.prototype, 'exist');
@@ -27,10 +29,15 @@ describe('OfferServiceComplete', () => {
     offerRepositoryGOMock = vi.spyOn(OfferRepository.prototype, 'getOffer');
     offerRepositoryMock = vi.spyOn(OfferRepository.prototype, 'complete');
     transactionmock = vi.spyOn(OfferRepository.prototype, 'trasnferItemsAndcompleteOffer');
+
+    const inventoryServiceInstance = new InventoryService({ inventoryRepository: new InventoryRepository({ mySQLConnection: {} }) });
+    inventoryServiceMock = vi.spyOn(inventoryServiceInstance, 'removeItemsFromUser').mockResolvedValue(true);
+
     offerService = new OfferService({
       offerRepository: new OfferRepository({ mySQLConnection: {} }),
       inventoryRepository: new InventoryRepository({ mySQLConnection: {} }),
-      userRepository: new UserRepository({ mySQLConnection: {} })
+      userRepository: new UserRepository({ mySQLConnection: {} }),
+      inventoryService: inventoryServiceInstance
     });
   });
 
@@ -66,6 +73,7 @@ describe('OfferServiceComplete', () => {
     userRepositoryMock.mockResolvedValueOnce(true);
     inventoryRepositoryMock.mockResolvedValueOnce([{ name: TEST_ITEM2, Quantity: 3 }]);
     transactionmock.mockResolvedValueOnce();
+    offerRepositoryMock.mockResolvedValueOnce(true);
 
     await expect(offerService.complete(id, userName)).resolves.not.toThrow();
     expect(transactionmock).toHaveBeenCalled();

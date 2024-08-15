@@ -29,7 +29,7 @@ describe('Login', () => {
 
     // Act
     const res = await request(app)
-      .get('/users')
+      .post('/users')
       .send({ userName: TEST_USERNAME, password: TEST_PASSWORD });
 
     // Assert
@@ -45,7 +45,7 @@ describe('Login', () => {
 
     // ACT
     const res = await request(app)
-      .get('/users')
+      .post('/users')
       .send({ username: TEST_USERNAME, password: TEST_PASSWORD_WITH_SPACE });
     // ASSERT
     expect(400);
@@ -59,7 +59,7 @@ describe('Login', () => {
 
     // ACT
     const res = await request(app)
-      .get('/users')
+      .post('/users')
       .send({ userName: TEST_USERNAME, password: TEST_WRONG_PASSWORD });
 
     // ASSERTS
@@ -76,7 +76,7 @@ describe('Login', () => {
     });
     // ACT
     const res = await request(app)
-      .get('/users')
+      .post('/users')
       .send({ userName: TEST_USERNAME, password: TEST_PASSWORD });
     // ASSERT
     expect(500);

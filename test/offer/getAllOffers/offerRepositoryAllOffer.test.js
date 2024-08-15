@@ -24,14 +24,14 @@ describe('OfferRepositoryGetOffers', () => {
     mockConnection.executeQuery
       .mockImplementationOnce(() => Promise.resolve(executeQueryExampleFirstCall))
       .mockImplementationOnce(() => Promise.resolve(executeQueryExampleSecondCall))
-      .mockImplementationOnce(() => Promise.resolve(executeQueryExampleThirdCall));
-
+      .mockImplementationOnce(() => Promise.resolve(executeQueryExampleThirdCall))
+      .mockImplementationOnce(() => Promise.resolve([{ Counts: 11 }]));
     // Act
     const res = await offerRepository.getOffers('1');
 
     // Assert
     expect(res).toEqual(executeQueryExampleParse);
-    expect(mockConnection.executeQuery).toBeCalledTimes(3);
+    expect(mockConnection.executeQuery).toBeCalledTimes(4);
   });
 
   it('should reject with an error if the connection returns an error', async () => {

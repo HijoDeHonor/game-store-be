@@ -32,7 +32,6 @@ export class InventoryController {
   removeItems = tryCatch(async (req, res) => {
     const username = req.params.userName;
     const list = req.body;
-
     await this.inventoryService.removeItemsFromUser(username, list);
 
     res.status(200).json(REMOVE_SUCCESS);

@@ -9,6 +9,7 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "eslint.useFlatConfig": true,
   // Configuraciones para Error Lens
 "errorLens.errorForeground": "#ff0000", // Color del texto para errores (rojo)
   "errorLens.errorBackground": "#ff000033", // Color de fondo para errores (rojo con transparencia)

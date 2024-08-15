@@ -44,7 +44,6 @@ export class InventoryService {
     }
     // Retrieve the quantities of the items.
     const quantities = await this.inventoryRepository.getQuantities(userName, list);
-
     const pendingActions = [];
     // Process each item in the list.
     for (const item of list) {
@@ -52,7 +51,6 @@ export class InventoryService {
       if (!itemName || !quantity) {
         throw new InvalidDataError(INVALID_DATA, INVENTORY);
       }
-
       // Find the quantity of the item that the user has.
       const userHasItem = quantities.find(q => q.itemName === itemName);
 
