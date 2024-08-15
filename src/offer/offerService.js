@@ -1,6 +1,6 @@
 import { DoesNotExistError } from '../errors/errorTypes/doesNotExistError.js';
 import { FailedCreatingError } from '../errors/errorTypes/failedCreatingError.js';
-import { FailedToDeleteError } from '../errors/ErrorTypes/failedToDeleteError.js';
+import { FailedToDeleteError } from '../errors/errorTypes/failedToDeleteError.js';
 import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
 import { DOES_NOT_EXIST, FAILED_CREATE, FAILED_DELETING, HAS_NOT_ENOUGH, INSUFFICIENT_QUANTITY, INVALID_DATA, OFFERS, USER_TRADER } from '../utils/textConstants.js';
 

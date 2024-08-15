@@ -1,7 +1,7 @@
 import { FAILED_ADDING, FAILED_DELETING, FAILED_GETTING, INVENTORY, SQLERROR } from '../utils/textConstants.js';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { FailedAddingError } from '../errors/ErrorTypes/failedAddingError.js';
-import { FailedToDeleteError } from '../errors/ErrorTypes/failedToDeleteError.js';
+import { FailedAddingError } from '../errors/errorTypes/failedAddingError.js';
+import { FailedToDeleteError } from '../errors/errorTypes/failedToDeleteError.js';
 
 export class InventoryRepository {
   constructor ({ mySQLConnection }) {
