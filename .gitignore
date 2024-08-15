@@ -54,3 +54,4 @@ docker-compose.override.yml
 docs/
 
 package-lock.json
+.vercel

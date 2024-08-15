@@ -7,7 +7,6 @@ import { createUserRouter } from './src/users/userRoutes.js';
 import { createOfferRouter } from './src/offer/offerRoutes.js';
 import { createInventoryRouter } from './src/inventory/inventoryRoutes.js';
 import { CORS_NOT_ALLOWED } from './src/utils/textConstants.js';
-import { createServer } from '@vercel/node';
 import { tryCatch } from './src/utils/tryCatch.js';
 
 dotenv.config();
@@ -44,4 +43,4 @@ app.listen(PORT, () => {
   console.log(`server listening on port ${PORT}`);
 });
 
-export default createServer(app);
+module.exports = app;
