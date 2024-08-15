@@ -1,5 +1,10 @@
 import { jwtCreator } from '../jwt/jwtCreator.js';
 import { tryCatch } from '../utils/tryCatch.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const tokenExpirationTimeSeconds = process.env.TOKEN_EXPIRATION_TIME_SECONDS;
 
 export class UserController {
   constructor ({ userService }) {
@@ -17,12 +22,14 @@ export class UserController {
   login = tryCatch(async (req, res) => {
     const { userName, password } = req.body;
     const logUser = await this.userService.login(userName, password);
-    const token = jwtCreator(logUser[0]);
+    const token = jwtCreator({ userName: logUser[0] });
     res
       .cookie('acces_token', token,
         {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production'
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: tokenExpirationTimeSeconds * 1000
         }
       )
       .status(200)

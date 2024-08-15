@@ -6,8 +6,8 @@ const userController = container.resolve('userController');
 export const createUserRouter = () => {
   const userRouter = Router();
 
-  userRouter.post('/', userController.create);
-  userRouter.get('/', userController.login);
+  userRouter.put('/', userController.create);
+  userRouter.post('/', userController.login);
 
   return userRouter;
 };

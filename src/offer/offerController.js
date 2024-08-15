@@ -24,7 +24,7 @@ export class OfferController {
   });
 
   getOffers = tryCatch(async (req, res) => {
-    const page = req.params.page;
+    const page = req.params.page || 1;
     const offers = await this.offerService.getOffers(page);
     return res.status(200).json(offers);
   });

@@ -1,7 +1,7 @@
 import { FAILED_ADDING, FAILED_DELETING, FAILED_GETTING, INVENTORY, SQLERROR } from '../utils/textConstants.js';
 import { FailedGettingError } from '../errors/errorTypes/failedGettingError.js';
-import { FailedAddingError } from '../errors/ErrorTypes/failedAddingError.js';
-import { FailedToDeleteError } from '../errors/ErrorTypes/failedToDeleteError.js';
+import { FailedAddingError } from '../errors/errorTypes/failedAddingError.js';
+import { FailedToDeleteError } from '../errors/errorTypes/failedToDeleteError.js';
 
 export class InventoryRepository {
   constructor ({ mySQLConnection }) {
@@ -119,7 +119,7 @@ export class InventoryRepository {
       const resultMap = new Map(result.map(result => [result.itemName, result.Quantity]));
 
       const quantities = itemList.map(item => ({
-        itemNane: item.itemName,
+        itemName: item.itemName,
         quantity: resultMap.get(item.itemName)
       }));
 

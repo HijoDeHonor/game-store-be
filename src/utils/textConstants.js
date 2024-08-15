@@ -5,6 +5,7 @@ export const USERS = 'Users';
 export const USER_TRADER = 'User Trader';
 
 // ERROR MESSAGES:
+export const CORS_NOT_ALLOWED = 'Not allowed by CORS';
 export const ALREADY_EXIST = 'Already exist';
 export const DOES_NOT_EXIST = 'Does not exist';
 export const ERROR_CREATING_USER = 'Error creating the new User';

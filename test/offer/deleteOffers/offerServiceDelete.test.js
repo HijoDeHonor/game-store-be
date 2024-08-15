@@ -1,19 +1,22 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { OfferRepository } from '../../../src/offer/offerRepository.js';
-import { TEST_ID_OFFER } from '../../../src/utils/textConstants.js';
+import { TEST_ID_OFFER, TEST_ITEM, TEST_USERNAME } from '../../../src/utils/textConstants.js';
 import { OfferService } from '../../../src/offer/offerService.js';
-import { FailedToDeleteError } from '../../../src/errors/ErrorTypes/failedToDeleteError.js';
-import { InvalidDataError } from '../../../src/errors/ErrorTypes/invalidDataError.js';
+import { FailedToDeleteError } from '../../../src/errors/errorTypes/failedToDeleteError.js';
+import { InvalidDataError } from '../../../src/errors/errorTypes/invalidDataError.js';
 
 describe('offerServiceDelete', () => {
-  let offerRepositoryMock;
+  let getOfferRepositoryMock;
   let offerService;
+  let addandDeleteMock;
+
   const id = TEST_ID_OFFER;
-  const rowsPositive = true;
-  const rowsNegative = false;
+  const userNamePoster = TEST_USERNAME;
+  const offerItems = { itemName: TEST_ITEM, quantity: 1 };
 
   beforeEach(() => {
-    offerRepositoryMock = vi.spyOn(OfferRepository.prototype, 'deleteOffer');
+    getOfferRepositoryMock = vi.spyOn(OfferRepository.prototype, 'getOffer');
+    addandDeleteMock = vi.spyOn(OfferRepository.prototype, 'addItemsAndDeleteOffer');
     offerService = new OfferService({ offerRepository: new OfferRepository({ mySQLConnection: {} }) });
   });
   afterEach(() => {
@@ -27,16 +30,18 @@ describe('offerServiceDelete', () => {
   });
 
   it('should be able to delete an offer without throwing errors', async () => {
-    // arrange
-    offerRepositoryMock.mockResolvedValue(rowsPositive);
+  // arrange
+    getOfferRepositoryMock.mockResolvedValue([{ userNamePoster, offerItems }]);
+    addandDeleteMock.mockResolvedValue(true);
     // act & assert
-    await expect(offerService.deleteOffer(id)).resolves.not.toThrow();
+    await expect(offerService.deleteOffer(id, offerItems, userNamePoster)).resolves.not.toThrow();
   });
 
-  it('should be able to return an error if the success message is false', async () => {
-    // arrange
-    offerRepositoryMock.mockResolvedValue(rowsNegative);
+  it('should return an error if the success message is false', async () => {
+  // arrange
+    getOfferRepositoryMock.mockResolvedValue([{ userNamePoster, offerItems }]);
+    addandDeleteMock.mockResolvedValue(false);
     // act & assert
-    await expect(offerService.deleteOffer(id)).rejects.toThrow(FailedToDeleteError);
+    await expect(offerService.deleteOffer(id, offerItems, userNamePoster)).rejects.toThrow(FailedToDeleteError);
   });
 });

@@ -31,7 +31,7 @@ describe('create', () => {
 
     // Act
     const res = await request(app)
-      .post('/users')
+      .put('/users')
       .send({ userName: uniqueUserName, password: TEST_PASSWORD });
 
     // Assert
@@ -46,7 +46,7 @@ describe('create', () => {
 
     // ACT
     const res = await request(app)
-      .post('/users')
+      .put('/users')
       .send({ username: TEST_USERNAME, password: TEST_PASSWORD_WITH_SPACE });
     // ASSERT
     expect(400);
@@ -62,7 +62,7 @@ describe('create', () => {
     });
     // ACT
     const res = await request(app)
-      .post('/users')
+      .put('/users')
       .send({ userName: TEST_USERNAME, password: TEST_PASSWORD });
     // ASSERT
     expect(500);
