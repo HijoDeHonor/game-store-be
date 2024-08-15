@@ -8,6 +8,7 @@ import { createOfferRouter } from './src/offer/offerRoutes.js';
 import { createInventoryRouter } from './src/inventory/inventoryRoutes.js';
 import { CORS_NOT_ALLOWED } from './src/utils/textConstants.js';
 import { createServer } from '@vercel/node';
+import { tryCatch } from './src/utils/tryCatch.js';
 
 dotenv.config();
 
@@ -25,6 +26,11 @@ app.use(cors({
   },
   credentials: true
 }));
+app.get(
+  '/',
+  tryCatch(async (req, res) => {
+    res.status(200).send('<h1>GameStore</h1>');
+  }));
 
 app.use('/users', createUserRouter());
 app.use('/offers', createOfferRouter());
