@@ -1,5 +1,5 @@
-import { DoesNotExistError } from '../errors/ErrorTypes/doesNotExistError.js';
-import { FailedAddingError } from '../errors/ErrorTypes/failedAddingError.js';
+import { DoesNotExistError } from '../errors/errorTypes/doesNotExistError.js';
+import { FailedAddingError } from '../errors/errorTypes/failedAddingError.js';
 import { InvalidDataError } from '../errors/errorTypes/invalidDataError.js';
 import { INVALID_DATA, INVENTORY, FAILED_ADDING, FAILED_DELETING, DOES_NOT_EXIST, USERS } from '../utils/textConstants.js';
 
