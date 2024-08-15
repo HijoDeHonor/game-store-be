@@ -26,6 +26,7 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
+    "@vercel/node": "^3.2.8",
     "awilix": "^10.0.2",
     "cookie-parser": "^1.4.6",
     "cors": "2.8.5",
