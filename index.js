@@ -15,16 +15,25 @@ const app = express();
 app.disable('x-powered-by');
 app.use(express.json());
 app.use(cookieParser());
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+    console.log(allowedOrigins);
+    console.log('CORS Request Origin:', origin);
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     return callback(new Error(CORS_NOT_ALLOWED));
   },
-  credentials: true
+  credentials: true,
+  methods: 'GET,POST,PUT,DELETE,PATCH',
+  allowedHeaders: 'Content-Type',
+  preflightContinue: false,
+  optionsSuccessStatus: 200
 }));
+
 app.get(
   '/',
   tryCatch(async (req, res) => {
