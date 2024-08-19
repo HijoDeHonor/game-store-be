@@ -23,7 +23,6 @@ export class UserController {
     const { userName, password } = req.body;
     const logUser = await this.userService.login(userName, password);
     const token = jwtCreator({ userName: logUser[0] });
-    console.log(process.env.NODE_ENV);
     res
       .cookie('acces_token', token,
         {
