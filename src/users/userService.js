@@ -18,7 +18,9 @@ export class UserService {
 
   create = async (userName, password) => {
     const user = this.validateUser(userName, password);
+    console.log('antes servicio');
     const newUser = await this.userRepository.create(user);
+    console.log('despues servicio');
     if (!newUser) {
       throw new FailedCreatingError(FAILED_CREATE, USERS);
     };
