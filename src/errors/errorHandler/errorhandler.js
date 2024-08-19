@@ -5,6 +5,7 @@ import { environment } from './config.js';
 const isDevelopmentOrTest = environment === 'development' || 'test';
 
 export const errorHandler = (error, req, res, next) => {
+  console.log(error);
   const statusCode = errors[error.name] || 500;
   if (isDevelopmentOrTest) {
     return res.status(statusCode).json({ error, stack: error.stack, message: error.message });
