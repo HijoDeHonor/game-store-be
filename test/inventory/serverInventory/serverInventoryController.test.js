@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import request from 'supertest';
-import { app } from '../../../index.js';
+import app from '../../../index.js';
 import { InventoryRepository } from '../../../src/inventory/inventoryRepository.js';
 import { FailedGettingError } from '../../../src/errors/errorTypes/failedGettingError.js';
 import { FAILED_GETTING, INVENTORY, SQLERROR, TEST_QUERY, TEST_QUERY_PARAMETER } from '../../../src/utils/textConstants.js';
@@ -9,7 +9,7 @@ import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
 const query = TEST_QUERY;
 const queryParameter = TEST_QUERY_PARAMETER;
 
-describe('serverInvetonryControllerGetItems', () => {
+describe('serverInventoryControllerGetItems', () => {
   let inventoryRepositoryMock;
 
   beforeEach(() => {

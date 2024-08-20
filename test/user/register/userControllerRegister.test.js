@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, FAILED_CREATE, USERS, TEST_QUERY, TEST_QUERY_PARAMETER, FAILED_CREATING_ERROR, TEST_USER_REPOSITORY_METHOD_CREATE, TEST_USER_SERVICE_METHOD_CREATE, TEST_USER_CONTROLLER_FILE_NAME } from '../../../src/utils/textConstants.js';
 import { MySQLConnection } from '../../../src/utils/mySQL/mySQLConnection.js';
 import request from 'supertest';
-import { app } from '../../../index.js';
+import app from '../../../index.js';
 import { FailedCreatingError } from '../../../src/errors/errorTypes/failedCreatingError.js';
 import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';
 

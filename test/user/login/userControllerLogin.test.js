@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { INVALID_DATA, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, TEST_USERNAME, USERS, INVALID_LOGIN, TEST_WRONG_PASSWORD, TEST_QUERY, TEST_QUERY_PARAMETER, FAILED_CREATE, SQLERROR } from '../../../src/utils/textConstants.js';
 import request from 'supertest';
-import { app } from '../../../index.js';
+import app from '../../../index.js';
 import { UserRepository } from '../../../src/users/userRepository.js';
 import { FailedCreatingError } from '../../../src/errors/errorTypes/failedCreatingError.js';
 import { SQLError } from '../../../src/errors/errorTypes/SQLError.js';

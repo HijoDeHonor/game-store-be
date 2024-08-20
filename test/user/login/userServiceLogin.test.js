@@ -3,7 +3,7 @@ import { TEST_USERNAME, TEST_PASSWORD, TEST_PASSWORD_WITH_SPACE, INVALID_DATA, I
 import { UserService } from '../../../src/users/userService.js';
 import { UserRepository } from '../../../src/users/userRepository.js';
 import { MySQLConnection } from '../../../src/utils/mySQL/mySQLConnection.js';
-import { DEFAULT_CONFIG } from '../../../src/utils/mySQL/mySQLConfig.js';
+import { DEFAULT_CONFIG } from '../../../src/utils/mySQL/mySQLConfigs.js';
 import { InvalidDataError } from '../../../src/errors/errorTypes/invalidDataError.js';
 
 describe('userServiceLogin', () => {

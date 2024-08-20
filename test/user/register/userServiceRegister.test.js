@@ -4,7 +4,7 @@ import { ALREADY_EXIST, ALREADY_EXIST_ERROR, FAILED_CREATING_ERROR, INVALID_DATA
 import { UserRepository } from '../../../src/users/userRepository.js';
 import { MySQLConnection } from '../../../src/utils//mySQL/mySQLConnection.js';
 import { InvalidDataError } from '../../../src/errors/errorTypes/invalidDataError.js';
-import { DEFAULT_CONFIG } from '../../../src/utils/mySQL/mySQLConfig.js';
+import { DEFAULT_CONFIG } from '../../../src/utils/mySQL/mySQLConfigs.js';
 
 describe('userService.create', () => {
   let userService;

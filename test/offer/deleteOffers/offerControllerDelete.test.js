@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
-import { app } from '../../../index.js';
+import app from '../../../index.js';
 import { HAS_BEEN_DELETE, TEST_ID_OFFER, TEST_ITEM, TEST_USERNAME } from '../../../src/utils/textConstants.js';
 import { MySQLConnection } from '../../../src/utils/mySQL/mySQLConnection.js';
 import { OfferRepository } from '../../../src/offer/offerRepository.js';
