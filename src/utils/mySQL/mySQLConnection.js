@@ -20,7 +20,6 @@ export class MySQLConnection {
     } catch (error) {
       throw new SQLError(error, query, parameters);
     } finally {
-      console.log('ejecutada');
       // solo cierra la connecion creada por localConnection no la externalConnection recive como parametro
       if (localConnection) {
         await localConnection.end();
