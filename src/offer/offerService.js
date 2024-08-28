@@ -42,15 +42,16 @@ export class OfferService {
     }
 
     const offer = await this.offerRepository.getOffer(id);
+    console.log(offer);
     const { offerItems, requestItems } = offer[0];
 
     if (!await this.userRepository.exist(userNameTrader)) {
       throw new DoesNotExistError(DOES_NOT_EXIST, USER_TRADER);
     }
     const userTraderItems = await this.inventoryRepository.getQuantities(userNameTrader, requestItems);
-
+    console.log(userTraderItems);
     const hasEnoght = this.compareItems(userTraderItems, requestItems);
-
+    console.log(hasEnoght);
     if (!hasEnoght) {
       throw new InvalidDataError(HAS_NOT_ENOUGH, OFFERS);
     }
@@ -72,7 +73,7 @@ export class OfferService {
     for (const reqItem of itemsMust) {
       const userItem = itemsHas.find(item => item.name === reqItem.name);
 
-      if (!userItem || userItem.Quantity < reqItem.Quantity) {
+      if (userItem.quantity === undefined || userItem.quantity < reqItem.quantity) {
         return false;
       }
     }
